@@ -4,28 +4,59 @@ using InteractiveUtils
 #include("EngineeringDataTCPserver.jl")
 const SymbolOrNothing = Union{Symbol,Nothing}
 const VectOrSymbolOrNothing = Union{Symbol,Nothing,Vector{SymbolOrNothing}}
+const PatterTypeUnion = Union{String,OrderedDict,Float64}
 export find_nodes
-abstract type AbstractMatcher{T} end
-for matcher_type in (:MatchesPat, :ContainsPat, :PatContains, :AnyPat)
-    @eval struct $matcher_type{T} <: AbstractMatcher{T}
-        pat::String
-        $matcher_type(s::String,type::SymbolOrNothing=nothing) =  new{type}(s)
+abstract type AbstractMatcher{T,P} end
+
+swap_contains(a,b) = contains(b,a)
+always_true(_,_) = true
+
+ # IN ALL FUNCTIONS THE FIRST ARGUMENT IS PATTERN THE SECOND ARGUMENTS IS THE NODE CONTENT OR INPUT ITSELF
+ # contains(a,b) search for 
+for (matcher_type,fun_name,internal_fun,consumer_fun) in zip((:MatchesPat, :ContainsPat, :PatContains),
+                                                (:matches_pat,:contains_pat,:pat_contains),
+                                                (:isequal,:contains,:swap_contains),(:all,:any,:any))
+    @eval struct $matcher_type{T,P} <: AbstractMatcher{T,P}
+        pat::P
+        $matcher_type(s::P,type::SymbolOrNothing=nothing) where P=  new{type,P}(s)
+    end
+    @eval $fun_name(pat::P,input,T) where P<:Union{String,Number} = !isnothing(T) ?  hasproperty(input,T) && $internal_fun(pat,getproperty(input,T)) : $internal_fun(pat,input)
+    @eval (tag::$matcher_type{T})(input) where T = $fun_name(tag.pat,input,T)
+    (iterate_over_name,look_in_name) = matcher_type == :ContainsPat ? (:pat, :_input) : (:_input, :pat)  
+    @eval function $fun_name(pat::P,input,T) where  P <: Union{AbstractVector,AbstractDict}
+        if !isnothing(T)
+            hasproperty(input,T) || return false
+            _input = getfield(input,T) 
+        else
+            _input  = input
+        end
+        return $consumer_fun(si-> in(si,$look_in_name) ,$iterate_over_name)
     end
 end
-struct AnyPatFixed{T} <: AbstractMatcher{T} # multipatterns matcher
-    pat::Vector{String}
-    AnyPatFixed(s::Vector{String},type::SymbolOrNothing=nothing) =  new{type}(s)
+struct AnyPatFixed{T,P} <: AbstractMatcher{T,P} # multipatterns matcher
+    pat::P
+    AnyPatFixed(s::P,type::SymbolOrNothing=nothing) where P<:Vector{String}=  new{type,P}(s)
 end
-(tag::MatchesPat{T})(input) where T = !isnothing(T) ?  hasproperty(input,T) && tag.pat == getproperty(input,T) : tag.pat == input
-(tag::AnyPat{T})(input) where T = !isnothing(T) ?  hasproperty(input,T) : tag.pat == input
-#(tag::TagContainsPat)(input) = contains(input,tag.pat)
-#(tag::PatContainsTag)(input) = contains(tag.pat,input) 
+
+
+
+#(tag::AnyPat{T})(input) where T = !isnothing(T) ?  hasproperty(input,T) : true
+
+#(tag::ContainsPat)(input) where T = !isnothing(T) ?  hasproperty(input,T) && tag.pat == getproperty(input,T) : contains(input,tag.pat)
+#(tag::PatContains)(input) where T = !isnothing(T) ?  hasproperty(input,T) && tag.pat == getproperty(input,T) : contains(tag.pat,input) 
 function (tag::AnyPatFixed{T})(input::Base.String) where T
     for p in tag.pat
         !(!isnothing(T) ?  hasproperty(input,T) && tag.pat == getproperty(input,T) : p == input) || return true
     end
     return false
 end
+function (tag::AnyPatFixed{T})(input::Base.String) where T
+    for p in tag.pat
+        !(!isnothing(T) ?  hasproperty(input,T) && tag.pat == getproperty(input,T) : p == input) || return true
+    end
+    return false
+end
+
 
 const AllTagMatchersUnion = Union{subtypes(AbstractMatcher)...}
 # to utils
