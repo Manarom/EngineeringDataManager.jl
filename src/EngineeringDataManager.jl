@@ -2,46 +2,109 @@ module EngineeringDataManager
 using XML,Sockets,OrderedCollections #,StructTypes,Observables,
 using InteractiveUtils
 #include("EngineeringDataTCPserver.jl")
+const ENG_DATA_FILE = Ref(".\\src\\EngineeringData.xml")
 const SymbolOrNothing = Union{Symbol,Nothing}
 const VectOrSymbolOrNothing = Union{Symbol,Nothing,Vector{SymbolOrNothing}}
 const PatterTypeUnion = Union{String,OrderedDict,Float64}
-export find_nodes
+export find_nodes, find_nodes_chain
 abstract type AbstractMatcher{T,P} end
 
 swap_contains(a,b) = contains(b,a)
 always_true(_,_) = true
-
+haskey_swapped(k,D) = haskey(D,k)
  # IN ALL FUNCTIONS THE FIRST ARGUMENT IS PATTERN THE SECOND ARGUMENTS IS THE NODE CONTENT OR INPUT ITSELF
  # contains(a,b) search for 
- # MatchesPat - true if pattern is totally matched
- # ContainsPat  - true if the patterns contains the tag
- # PatContains - true if pattern contains the input 
+ # MatchesPat -   true if pattern is totally matched
+ # PatContains -  true if the pattern contains the input contains(pat,input) = true
+ # ContainsPat  - true if the input contains the pattern contains(inout,pat) = true
+ # HasAnyKeyPat - true if the input has at least element of pat as a key
+ # HasAllKeysPat - true if the inout has all elements of pat as keys
  # ContainsAnyPat - true if tag contains any of matterns
-for (matcher_type,fun_name,internal_fun,consumer_fun) in zip((:MatchesPat, :PatContains, :ContainsPat,:ContainsAnyPat,:AnyPat),
-                                                (:matches_pat,:pat_contains,:contains_pat,:contains_pat,:any_pat),
-                                                (:isequal,:contains,:swap_contains,:contains,:always_true),
-                                                (:all,:all,:all,:any,:any))
+ _itp = NamedTuple{(:fun,:internal,:consumer)}
+for (matcher_type,d) in (:MatchesPat  => _itp((:matches_pat,:isequal,:all)),
+                         :PatContains =>  _itp((:pat_contains,:contains,:all)),
+                         :ContainsPat => _itp((:contains_pat,:swap_contains,:all)),
+                         :ContainsAnyPat => _itp((:contains_any_pat,:contains,:any)),
+                         :HasAnyKeyPat => _itp((:has_any_key_pat,:haskey_swapped,:any)),
+                         :HasAllKeysPat => _itp((:has_all_key_pat,:haskey_swapped,:all)),
+                         :AnyPat => _itp((:any_pat, :always_true,:any)))
+
     @eval struct $matcher_type{T,P} <: AbstractMatcher{T,P}
         pat::P
-        $matcher_type(s::P,type::SymbolOrNothing=nothing) where P=  new{type,P}(s)
+        $matcher_type(s::P,type::SymbolOrNothing=nothing) where P =  new{type,P}(s)
     end
-    @eval $fun_name(pat::P,input,T) where P <: Union{String,Number} = !isnothing(T) ?  hasproperty(input,T) && $internal_fun(pat,getproperty(input,T)) : $internal_fun(pat,input)
-    @eval (tag::$matcher_type{T})(input) where T = $fun_name(tag.pat,input,T)
-    (iterate_over,look_in) = matcher_type == :PatContains ? (:_input, :pat) : (:pat, :_input)
+    @eval $(d.fun)(pat::P,input,T) where P <: Union{String,Number} = !isnothing(T) ?  hasproperty(input,T) && $(d.internal)(pat,getproperty(input,T)) : $(d.internal)(pat,input)
+    @eval (tag::$matcher_type{T})(input) where T = $(d.fun)(tag.pat,input,T)
+    (iterate_over, look_in, in_checker) = if matcher_type == :PatContains
+                                                (:_input, :pat,:in) 
+                                            elseif matcher_type == :AnyPat
+                                                (:pat, :pat, :in)  
+                                            elseif (matcher_type == :HasAnyKeyPat) || (matcher_type == :HasAllKeysPat)
+                                                (:pat, :_input, :haskey_swapped)   
+                                            else 
+                                                (:pat, :_input, :in)
+                                            end
     # when ierating over the collection iterate_over is the collection which members we are looking in look_in    
-    @eval function $fun_name(pat::P,input,T) where  P <: Union{AbstractVector,AbstractDict}
+    @eval function $(d.fun)(pat::P,input,T) where  P <: Union{AbstractVector,AbstractDict,NTuple}
         if !isnothing(T)
             hasproperty(input,T) || return false
             _input = getfield(input,T) 
+            !isnothing(_input) || return false
         else
             _input  = input
         end
         # @show pat,_input
-        return $consumer_fun(si-> in(si,$look_in) ,$iterate_over)
+        return $(d.consumer)(si-> $in_checker(si,$look_in) ,$iterate_over)
     end
 end
-
 const AllTagMatchersUnion = Union{subtypes(AbstractMatcher)...}
+
+
+""" Object to match patterns in inputs and input structures fields
+    
+matcher  = MatchesPat(pat,field_name::Union{Symbol,Nothing}=nothing);
+
+matcher(input):
+Returns true if `pat` is matched to the `input`
+object field `field_name` if `field_name` is `nothing` than `input` itself is matched.
+The syntax is the same for all other matchers, see [`AllTagMatchersUnion`](@ref) = $(AllTagMatchersUnion)
+for the list of matchers types"""
+ MatchesPat 
+ """
+    matcher  = PatContains(pat,field_name::Union{Symbol,Nothing}=nothing);
+matcher(input) - true if  `pat` contains the `input.field_name` if `field_name` is `nothing` than `input` itself is matched.
+The syntax is the same for all other matchers, see [`AllTagMatchersUnion`](@ref) = $(AllTagMatchersUnion)
+for the list of matchers types"""
+ PatContains 
+ """
+    matcher  = ContainsPat(pat,field_name::Union{Symbol,Nothing}=nothing);
+matcher(input) true if the `input.field_name` contains the pattern 
+if `field_name` is `nothing` than `input` itself is matched.
+The syntax is the same for all other matchers, see [`AllTagMatchersUnion`](@ref) = $(AllTagMatchersUnion)
+for the list of matchers types"""
+ ContainsPat 
+"""
+    matcher  = ContainsPat(pat,field_name::Union{Symbol,Nothing}=nothing);
+matcher(input) - true if the` input.field_name` has at least one element of `pat` as a key
+if `field_name` is `nothing` than `input` itself is matched.
+The syntax is the same for all other matchers, see [`AllTagMatchersUnion`](@ref) = $(AllTagMatchersUnion)
+for the list of matchers types"""
+ HasAnyKeyPat 
+ """
+    matcher  = ContainsPat(pat,field_name::Union{Symbol,Nothing}=nothing);
+matcher(input) - true if the `input.field_name` has all elements of `pat` as keys
+if `field_name` is `nothing` than `input` itself is matched.
+The syntax is the same for all other matchers, see [`AllTagMatchersUnion`](@ref) = $(AllTagMatchersUnion)
+for the list of matchers types"""
+HasAllKeysPat 
+"""
+matcher  = ContainsAnyPat(pat,field_name::Union{Symbol,Nothing}=nothing);
+matcher(input) - true if `input.field_name` contains any of pat elements 
+if `field_name` is `nothing` than `input` itself is matched.
+The syntax is the same for all other matchers, see [`AllTagMatchersUnion`](@ref) = $(AllTagMatchersUnion)
+for the list of matchers types"""
+ContainsAnyPat 
+
 # to utils
 strstr(s) = string(strip(s))
 is_embraced(s::AbstractString) = contains(s,"[") && contains(s,"]")
@@ -110,7 +173,7 @@ function find_nodes_chain!(node_vector::Vector{T},nd::T,tag_chain::ChainMatcher,
 end
 
 
-const ENG_DATA_FILE = Ref(".\\src\\EngineeringData.xml")
+
 const XML_DOC =  begin 
                         out = Ref{Node}()
                         try    
@@ -180,6 +243,7 @@ function find_nodes(tag::String="EngineeringData", field_type::SymbolOrNothing=:
     find_nodes(XML_DOC[],MatchesPat(tag,field_type))
 end
 find_nodes(starting_node,tag::String,field_type::SymbolOrNothing=:tag) = find_nodes(starting_node,MatchesPat(tag,field_type))
+
 
 function find_nodes(starting_node::T,tag::AbstractMatcher) where T
     node_vector = Vector{T}()
