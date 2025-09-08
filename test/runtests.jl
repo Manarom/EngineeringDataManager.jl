@@ -1,5 +1,23 @@
 using EngineeringDataManager
 using Test
+using OrderedCollections
+AttrType = Union{OrderedDict,Nothing}
+mutable struct NodeImitation
+    tag::String
+    children::Union{Vector{NodeImitation},Nothing}
+    attributes::AttrType
+    NodeImitation(;tag::String,children=nothing,attributes::AttrType=nothing) = new(tag,children,attributes)
+end
+
+node11 = NodeImitation(tag="leaf1",attributes = OrderedDict("id"=>"p1","b"=>10))
+node12 = NodeImitation(tag="leaf2",attributes = OrderedDict("id"=>"p2","c"=>10))
+node1 = NodeImitation(tag="branch1",children = [node11,node12])
+node2 = NodeImitation(tag="branch2")
+root_node = NodeImitation(tag="root",children = [node1,node2])
+
+
+
+
 pwd()
 @testset "EngineeringDataManager.jl" begin
     # Write your tests here.
@@ -66,7 +84,15 @@ pwd()
     @test EngineeringDataManager.AnyPat(("a"=>1 , "a"=>2 ,"c"=>2))(("a"=>1,))
     @test EngineeringDataManager.AnyPat(("a" => 1 ,),:tag)(a2)
 
+    # testing find_nodes function using matchers
 
-
-
+    @test node1 == find_nodes(root_node,"branch1")[]
+    @test node1 == find_nodes(root_node,EngineeringDataManager.ContainsPat("branch",:tag))[1]
+    @test node2 == find_nodes(root_node,EngineeringDataManager.ContainsPat("branch",:tag))[2]
+    @test node11 == find_nodes(node1,EngineeringDataManager.PatContains("leaf1leaf2",:tag))[1]
+    @test node11 == find_nodes(root_node,EngineeringDataManager.ContainsPat("leaf",:tag))[1]
+    @test node11 == find_nodes(root_node,EngineeringDataManager.ContainsPat(("id"=>"p1",),:attributes))[]
+    leaf_nodes_branches = find_nodes(root_node,EngineeringDataManager.HasAnyKeyPat(("id",),:attributes))
+    @test node11 == leaf_nodes_branches[1]
+    @test node12 == leaf_nodes_branches[2]
 end
