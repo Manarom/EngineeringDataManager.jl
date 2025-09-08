@@ -7,7 +7,7 @@ EngineeringDataManager.fill_parameters_ids()
 EngineeringDataManager.ParamIDs[]
 
 D = EngineeringDataManager.ParamIDs[]
-EngineeringDataManager.parse_chain_string("A/B/[C D]/f")
+EngineeringDataManager.parse_chain_data("A/B/[C D]/f")
 
 
 mat_nodes = EngineeringDataManager.material_nodes()

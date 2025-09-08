@@ -4,27 +4,41 @@ using InteractiveUtils
 #include("EngineeringDataTCPserver.jl")
 const SymbolOrNothing = Union{Symbol,Nothing}
 const VectOrSymbolOrNothing = Union{Symbol,Nothing,Vector{SymbolOrNothing}}
+const PatterTypeUnion = Union{String,OrderedDict,Float64}
 export find_nodes
-abstract type AbstractMatcher{T} end
-for matcher_type in (:MatchesPat, :ContainsPat, :PatContains, :AnyPat)
-    @eval struct $matcher_type{T} <: AbstractMatcher{T}
-        pat::String
-        $matcher_type(s::String,type::SymbolOrNothing=nothing) =  new{type}(s)
+abstract type AbstractMatcher{T,P} end
+
+swap_contains(a,b) = contains(b,a)
+always_true(_,_) = true
+
+ # IN ALL FUNCTIONS THE FIRST ARGUMENT IS PATTERN THE SECOND ARGUMENTS IS THE NODE CONTENT OR INPUT ITSELF
+ # contains(a,b) search for 
+ # MatchesPat - true if pattern is totally matched
+ # ContainsPat  - true if the patterns contains the tag
+ # PatContains - true if pattern contains the input 
+ # ContainsAnyPat - true if tag contains any of matterns
+for (matcher_type,fun_name,internal_fun,consumer_fun) in zip((:MatchesPat, :PatContains, :ContainsPat,:ContainsAnyPat,:AnyPat),
+                                                (:matches_pat,:pat_contains,:contains_pat,:contains_pat,:any_pat),
+                                                (:isequal,:contains,:swap_contains,:contains,:always_true),
+                                                (:all,:all,:all,:any,:any))
+    @eval struct $matcher_type{T,P} <: AbstractMatcher{T,P}
+        pat::P
+        $matcher_type(s::P,type::SymbolOrNothing=nothing) where P=  new{type,P}(s)
     end
-end
-struct AnyPatFixed{T} <: AbstractMatcher{T} # multipatterns matcher
-    pat::Vector{String}
-    AnyPatFixed(s::Vector{String},type::SymbolOrNothing=nothing) =  new{type}(s)
-end
-(tag::MatchesPat{T})(input) where T = !isnothing(T) ?  hasproperty(input,T) && tag.pat == getproperty(input,T) : tag.pat == input
-(tag::AnyPat{T})(input) where T = !isnothing(T) ?  hasproperty(input,T) : tag.pat == input
-#(tag::TagContainsPat)(input) = contains(input,tag.pat)
-#(tag::PatContainsTag)(input) = contains(tag.pat,input) 
-function (tag::AnyPatFixed{T})(input::Base.String) where T
-    for p in tag.pat
-        !(!isnothing(T) ?  hasproperty(input,T) && tag.pat == getproperty(input,T) : p == input) || return true
+    @eval $fun_name(pat::P,input,T) where P <: Union{String,Number} = !isnothing(T) ?  hasproperty(input,T) && $internal_fun(pat,getproperty(input,T)) : $internal_fun(pat,input)
+    @eval (tag::$matcher_type{T})(input) where T = $fun_name(tag.pat,input,T)
+    (iterate_over,look_in) = matcher_type == :PatContains ? (:_input, :pat) : (:pat, :_input)
+    # when ierating over the collection iterate_over is the collection which members we are looking in look_in    
+    @eval function $fun_name(pat::P,input,T) where  P <: Union{AbstractVector,AbstractDict}
+        if !isnothing(T)
+            hasproperty(input,T) || return false
+            _input = getfield(input,T) 
+        else
+            _input  = input
+        end
+        # @show pat,_input
+        return $consumer_fun(si-> in(si,$look_in) ,$iterate_over)
     end
-    return false
 end
 
 const AllTagMatchersUnion = Union{subtypes(AbstractMatcher)...}
@@ -65,7 +79,7 @@ function parse_chain_data(s::String,field_types::VectOrSymbolOrNothing=nothing)
        elseif is_embraced(s_cur)
             si_patt = split(extract_embraced(s_cur))
             length(si_patt) > 0 || continue
-            push!(tag_vect,AnyPatFixed(strstr.(si_patt),cur_field))
+            push!(tag_vect,ContainsAnyPat(strstr.(si_patt),cur_field))
        else
             push!(tag_vect,MatchesPat(s_cur,cur_field))
        end
@@ -76,15 +90,15 @@ function find_nodes_chain(starting_node::T,xml_chain_string::String,field_types:
     node_vector = Vector{T}()
     return find_nodes_chain!(node_vector,starting_node,ChainMatcher(xml_chain_string,field_types))
 end
-function find_nodes_chain!(node_vector::Vector{T},nd::T,tag_chain::ChainMatcher,state::Int=1) where T
+function find_nodes_chain!(node_vector::Vector{T},nd::T,tag_chain::ChainMatcher,state::Int=1,first_node::Bool=true) where T
     (tag,next_state) = iterate(tag_chain,state)
     has_next_state = !isnothing(iterate(tag_chain,next_state))
     if tag(nd) 
         if !has_next_state
             push!(node_vector,nd)
-            return node_vector
+            !first_node || return node_vector
         end
-    else
+    elseif first_node
         return node_vector
     end
     !isnothing(nd.children) || return node_vector
