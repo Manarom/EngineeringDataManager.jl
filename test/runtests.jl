@@ -48,7 +48,11 @@ pwd()
     @test !EngineeringDataManager.ContainsPat("ab")("acb")
     @test EngineeringDataManager.ContainsPat(("aaa"=>1,"bbb"=>2))(("aaa"=>1,"bbb"=>2, "ccc"=>10))
     @test !EngineeringDataManager.ContainsPat(("aaa"=>1,"bbb"=>999))(("aaa"=>1,"bbb"=>2, "ccc"=>10))
+
+    a2 = A("abba") # struct with field :tag
+    @test EngineeringDataManager.ContainsPat("ab",:tag)(a2)
     a2 = A(Dict("a"=>1,"b"=>2)) # struct with field :tag
+    
     @test EngineeringDataManager.ContainsPat(("a"=>1,"b"=>2),:tag)(a2)
     @test !EngineeringDataManager.ContainsPat(("a"=>11,"b"=>2),:tag)(a2)
     @test EngineeringDataManager.ContainsPat(Dict("a"=>1),:tag)(a2)
@@ -84,6 +88,10 @@ pwd()
     @test EngineeringDataManager.AnyPat(("a"=>1 , "a"=>2 ,"c"=>2))(("a"=>1,))
     @test EngineeringDataManager.AnyPat(("a" => 1 ,),:tag)(a2)
 
+    m1 = EngineeringDataManager.ContainsPat("leaf",:tag)
+    m2 = EngineeringDataManager.HasAnyKeyPat(["id"],:attributes)
+    mat_set = EngineeringDataManager.MatchersSet((m1,m2),:all)
+    @test mat_set(node11)
     # testing find_nodes function using matchers
 
     @test node1 == find_nodes(root_node,"branch1")[]
@@ -95,4 +103,7 @@ pwd()
     leaf_nodes_branches = find_nodes(root_node,EngineeringDataManager.HasAnyKeyPat(("id",),:attributes))
     @test node11 == leaf_nodes_branches[1]
     @test node12 == leaf_nodes_branches[2]
+
+    # testing node chains 
+
 end
