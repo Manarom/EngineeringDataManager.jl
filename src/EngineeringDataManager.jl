@@ -6,15 +6,12 @@ const ENG_DATA_FILE = Ref(".\\src\\EngineeringData.xml")
 const SymbolOrNothing = Union{Symbol,Nothing}
 const VectOrSymbolOrNothing = Union{Symbol,Nothing,Vector{SymbolOrNothing}}
 const PatterTypeUnion = Union{String,OrderedDict,Float64}
-const has_round = contains("(")
-const has_square = contains("[")
-const has_curl = contains("{")
-const has_asterisk = contains("*")
-const has_equal = contains("=")
-const has_dot = contains(".")
+
 
 export find_nodes, find_nodes_chain
 abstract type AbstractMatcher{T,P} end
+
+include("StringUtils.jl")
 
 swap_contains(a,b) = contains(b,a)
 always_true(_,_) = true
@@ -32,6 +29,7 @@ for (matcher_type,d) in (:MatchesPat  => _itp((:matches_pat,:isequal,:all)),
                          :PatContains =>  _itp((:pat_contains,:contains,:all)),
                          :ContainsPat => _itp((:contains_pat,:swap_contains,:all)),
                          :ContainsAnyPat => _itp((:contains_any_pat,:contains,:any)),
+                         :ContainsAllPats => _itp((:contains_any_pat,:contains,:all)),
                          :HasAnyKeyPat => _itp((:has_any_key_pat,:haskey_swapped,:any)),
                          :HasAllKeysPat => _itp((:has_all_key_pat,:haskey_swapped,:all)),
                          :AnyPat => _itp((:any_pat, :always_true,:any)))
@@ -141,76 +139,15 @@ if `field_name` is `nothing` than `input` itself is matched.
 The syntax is the same for all other matchers, see [`AllTagMatchersUnion`](@ref) = $(AllTagMatchersUnion)
 for the list of matchers types"""
 ContainsAnyPat
-
+"""
+matcher  = ContainsAllPats(pat,field_name::Union{Symbol,Nothing}=nothing);
+matcher(input) - true if `input.field_name` contains all of pat elements 
+if `field_name` is `nothing` than `input` itself is matched.
+The syntax is the same for all other matchers, see [`AllTagMatchersUnion`](@ref) = $(AllTagMatchersUnion)
+for the list of matchers types"""
+ContainsAllPats
 # to utils
-strstr(s) = string(strip(s))
-#=
-function is_embraced_square(s::AbstractString) 
-    s = strip(s)
-    return length(s) > 0 ? s[1]=='[' && s[end] == ']'  : false
-end
-function is_embraced_curl(s::AbstractString) 
-    s = strip(s)
-    return length(s) > 0 ? s[1] == '{' && s[end] == '}'  : false
-end
-function is_embraced_round(s::AbstractString)
-    s = strip(s)
-    return length(s) > 0 ? s[1] == '(' && s[end]== ')'  : false   
-end
-=#
-for (name_str,left_char,right_char) in zip(("_square","_curl","_round"),('[','{','('),(']','}',')'))
-    is_embraced_cur = Symbol("is_ambraced"*name_str)
-    @eval function $is_embraced_cur(s::AbstractString)
-        s = strip(s)
-        return length(s) > 0 ? s[1]==$left_char && s[end] == $right_char  : false
-    end
-    extract_embraced_cur = Symbol("extract_embraced"*name_str)
-    left_reg = Regex("\\$(left_char)")
-    right_reg = Regex("\\$(right_char)")
-    @eval function $extract_embraced_cur(s)
-        !$is_embraced_cur(s) || return extract_between(s,$left_reg,$right_reg)
-        return s
-    end
-end
 
-is_embraced(s) = is_embraced_curl(s) || is_embraced_square(s) || is_embraced_round(s)
-#=
-extract_embraced_square(s) = is_embraced_square(s) ? extract_between(s,Regex("\\["),Regex("\\]")) : s
-extract_embraced_curl(s) = is_embraced_curl(s) ? extract_between(s,Regex("\\{"),Regex("\\}")) : s
-extract_embraced_round(s) = is_embraced_round(s) ? extract_between(s,Regex("\\("),Regex("\\)")) : s
-=#
-#=function extract_embraced(s,embrace) 
-
-    if is_embraced_curl(s)
-            extract_between(s,Regex("\\{"),Regex("\\}"))
-    elseif is_embraced_square(s)
-            extract_between(s,Regex("\\["),Regex("\\]"))
-    elseif is_embraced_round(s)
-            extract_between(s,Regex("\\("),Regex("\\)"))
-    else
-        (has_round_f,has_curl_f,has_square_f) = (has_round(s),has_curl(s),has_square(s))
-        
-    end
-end=#
-#extract_embraced_square(s) = extract_between(s,Regex("\\["),Regex("\\]"))
-extract_between(s::AbstractString,left::AbstractString,right::AbstractString) = extract_between(s,Regex(left),Regex(right))
-function extract_between(s::AbstractString,pat_left::Regex,pat_right::Regex)
-    ind_left = match(pat_left,s).offset 
-    !isnothing(ind_left) || return ""
-    ind_right = match(pat_right,s).offset
-    !isnothing(ind_right) || return ""
-    return (ind_left <= ind_right) && (ind_right >= 3) ? s[ind_left + 1 : ind_right - 1] : ""
-end
-function extract_after(s::AbstractString,pat::Regex)
-    ind_left = match(pat,s).offset 
-    !isnothing(ind_left) || return s
-    return s[ind_left + 1 : end]
-end
-function extract_before(s::AbstractString,pat::Regex)
-    ind_right = match(pat,s).offset 
-    !isnothing(ind_right) || return s
-    return s[1 : ind_right - 1]
-end
 struct ChainMatcher
     pat_vect::Vector{AllTagMatchersUnion}
     state::Int
@@ -222,111 +159,88 @@ end
 Base.iterate(t::ChainMatcher) = iterate(t.pat_vect);
 Base.iterate(t::ChainMatcher,state) = iterate(t.pat_vect,state);
 
-function get_field_name_from_single_string(s)
-    contains(s,".") || return nothing
-
-end
-function parse_field_string(s::AbstractString)
-    if has_round(s) # field has keys
-        field_name = Symbol(extract_before(s,Regex("\\(")))
+function field_string_to_matcher(s::AbstractString)
+    #@show s
+    if has_round(s) 
+        field_name = Symbol(extract_before(s,"("))
         args = extract_embraced_round(s)
-        
-        if has_equal(args) # key-value pairs
-            if is_embraced(args)
-               # HasAnyKeyPat 
-               # HasAllKeysPat
-            else # has no {} or []
-
-            end
-        else # only keys
-            is_embraced(args) || error("set of keys must be embraced in {...} or [...]")
-            args = extract_embraced(args)
-            args_vect = parse_single_string_or_number.(split(args,","))
-             if is_embraced_curl(args)
-                return HasAllKeysPat(args_vect,field_name)
-             elseif is_embraced_square(args)
-                return HasAnyKeysPat(args_vect,field_name)  
-             else
-                error("incorrect keys set syntax, must be embraced in {...} or [...] ")
-             end  
+        is_embraced(args) || error("set of keys must be embraced in {...} or [...]")
+        is_only_keys = !has_equal(args) # field has keys but not key-value pairs
+        if is_embraced_curl(args)
+            #args = extract_embraced_round(s) # extracting specified field arguments
+            args_vect = extract_embraced_args_curl(args)
+            return is_only_keys ? HasAllKeysPat(args_vect,field_name) : ContainsAllPats(args_vect,field_name)
+        elseif is_embraced_square(args)
+            args_vect = extract_embraced_args_square(args)
+            return is_only_keys ? HasAnyKeyPat(args_vect,field_name) : ContainsAnyPat(args_vect,field_name)
+        else
+            error("Unsupported field_name = $(field_name) and arguments = $(args)")
         end
-    elseif has_equal(s) # simple field
-        splitted = map(strstr,eachsplit(s,"=")) 
-        length(splitted) == 2 || error("Incorrect string $(s)")
-        field_name = Symbol(splitted[1])
-        value_str = splitted[2]
-        if !is_embraced_curl(value_str) && !is_embraced_square(value_str) # simple argument
-            value = parse_single_string_or_number(value_str)
-            if isa(value,AbstractString)
-                if !has_asterisk(value) 
-                    return MatchesPat(value,field_name)     
-                else
-                    value = replace(value,"*"=>"")
-                    return ContainsPat(value,field_name) 
-                end
-            else
-                return MatchesPat(value,field_name)
-            end
-        else # embraced!!!
-            if is_embraced_curl(s)
+    elseif has_equal(s)
+        (field_name_string,value) = split_equality(s) # parses as key-value pair
+        # @show (field_name_string,value)
+        length(value) > 0 || error("Incorrect string format $(s)")
+        field_name = Symbol(field_name_string)
+        try_parse = tryparse(Float64,value)
+        isnothing(try_parse) || return simple_string_or_number_to_matcher(try_parse,field_name)
+        if !is_embraced_curl(value) && !is_embraced_square(value) # simple argument has equalities but no round or squares
+            return simple_string_or_number_to_matcher(value,field_name)
+        else # embraced!!! thus it is a collection of key-value pairs
+            #@show value
+            if is_embraced_curl(value)
                 matchers_set = MatchersSet(:all)
+                values_vect = extract_embraced_args_curl(value)
             else
                 matchers_set = MatchersSet(:any)
+                values_vect = extract_embraced_args_square(value)
             end
-            # field_name
-            value_str = extract_embraced(value_str)
-            for vi in eachsplit(value_str,",")
-                vi_cur = join((field_name, strstr(vi)),"=")
-                push!(matchers_set,parse_field_string(vi_cur))
+            for vi in values_vect
+                push!(matchers_set, simple_string_or_number_to_matcher(vi,field_name))
             end
             return matchers_set
         end
     else
-        error("Incorrect string $(s)")
+        error("Incorrect string format $(s)")
     end
 end
-function parse_single_string_or_number(s_str)::Union{String,Float64}
-    if isnothing(tryparse(Float64,s_str))
-        !contains(s_str,"::text") || (s = extract_before(s_str,Regex("::text")))
-        s = strstr(s_str);
+function simple_string_or_number_to_matcher(value::AbstractString,field_name::Symbol=:tag)
+    if !has_asterisk(value) 
+        return MatchesPat(value,field_name)     
     else
-        s = parse(Float64,s_str)
+        value = replace(value,"*"=>"")
+        return ContainsPat(value,field_name) 
     end
-    return s
 end
-function parse_chain_string_token!( s::String)
-    
-    if !is_embraced(s) 
-        if has_asterisk(s) 
-            if  s == "*" 
-                return AnyPat(s,cur_field)
-            else
-                if has_dot(s) # contains both dot and asterics
-                     splitted = strip.(split(s,"."))   
-                     length(splitted) == 2 || error("Incorrect string $(s)")
-                else
+simple_string_or_number_to_matcher(value::Number,field_name::Symbol=:tag) = MatchesPat(value,field_name)
+"""
+    chain_string_token_to_matcher(s::String)
 
-                end    
-            end
-        end
-    elseif is_embraced(s)
-         si_patt = split(extract_embraced(s))
-         length(si_patt) > 0 || return nothing
-         push!(tag_vect,ContainsAnyPat(strstr.(si_patt),cur_field))
+Function to convert single expression into the matcher object
+"""
+function chain_string_token_to_matcher(s::String,field_name::Symbol=:tag)
+    if is_simple_pattern(s) 
+        return simple_string_or_number_to_matcher(s,field_name)
+    elseif !has_nondigit_dot(s) && is_embraced_square(s)
+         si_patt = extract_embraced_args_square(s)
+         length(si_patt) > 0 || error("Incorrect syntax $(s)")
+         any(x->isa(x,Number),si_patt) || return ContainsAnyPat(si_patt,field_name)
+         return ContainsAnyPat(string.(si_patt),field_name)
+    elseif has_nondigit_dot(s)
+         splitted = split_tag_and_field_name(s)
+         tag_matcher = chain_string_token_to_matcher(splitted[1],:tag)
+         field_matcher = field_string_to_matcher(splitted[2])
+         return MatchersSet((tag_matcher,field_matcher),:all)
     else
          return MatchesPat(s,cur_field)
     end
 end
 
-function parse_chain_data(s::String,field_types::VectOrSymbolOrNothing=nothing)
+function parse_chain_string(s::String)
     tag_vect = Vector{AllTagMatchersUnion}()
-    is_single_element_field = isnothing(field_types) || isa(field_types,Symbol)
     counter = 0
     for si in eachsplit(s,"/")
         counter +=1
-        s_cur = strstr(si)
-        cur_field = is_single_element_field ? field_types : field_types[counter]
-
+        push!(tag_vect,chain_string_token_to_matcher(strstr(si)))
     end
     return tag_vect
 end

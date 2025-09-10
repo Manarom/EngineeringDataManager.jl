@@ -29,5 +29,4 @@ same as in previous example, but seraches for all key-value pairs matches
 `*` is symbol of any value of tag, e.g. `/*.field_name = "c"/`  - searches for node with any tag and 
 `field_name` value `"c"`, e.g. `/*.tag = "A"/` is the same as `/A/`. The `*` can also be used for partial 
 matching e.g. `/*Prop/` will search for nodes with tags containing `"Prop"` e.g. `"BulkProp"`, `"PropertyOne"` etc.
-Fildnames cannot contain `*` , `/ node_tag.*partial_name = "c" /` is not supported, but `/ node_tag.field_name = "*ca" /` 
-is ok.
+Fild - names cannot contain `*` , `/ node_tag.*partial_name = "c" /` is not supported, but `/ node_tag.field_name = "*ca" /` is ok.
