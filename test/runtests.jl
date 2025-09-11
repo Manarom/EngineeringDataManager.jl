@@ -98,7 +98,7 @@ root_node = NodeImitation(tag="root",children = [node1,node2])
     @test mat_set(node11)
     # testing find_nodes function using matchers
 
-    @test node1 == find_nodes(root_node,"branch1")[]
+    
     @test node1 == find_nodes(root_node,XMLwalker.ContainsPat("branch",:tag))[1]
     @test node2 == find_nodes(root_node,XMLwalker.ContainsPat("branch",:tag))[2]
     @test node11 == find_nodes(node1,XMLwalker.PatContains("leaf1leaf2",:tag))[1]
@@ -108,5 +108,11 @@ root_node = NodeImitation(tag="root",children = [node1,node2])
     @test node11 == leaf_nodes_branches[1]
     @test node12 == leaf_nodes_branches[2]
     #@test 
-
+    @test node1 == find_nodes(root_node,"branch1")[]
+    out = find_nodes(root_node,"[branch1,leaf1]") # [] means that one of the patterns should be matched
+    @test (node1 ∈ out) && (node11 ∈ out)
 end
+
+
+m = XMLwalker.chain_string_token_to_matcher("[branch1,leaf1]")
+m(node2)

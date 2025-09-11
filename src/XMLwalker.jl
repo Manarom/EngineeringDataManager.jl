@@ -28,6 +28,7 @@ module XMLwalker
     always_true(_,_) = true
     haskey_swapped(k,D) = haskey(D,k)
     internal_in(k,itr) = in(k,itr)
+    internal_in(a::AbstractString,b::AbstractString) = internal_isequal(a,b)
     internal_in(pat::AbstractPattern,s::AbstractString) = internal_isequal(pat,s) 
     internal_in(pat::AbstractString ,s::AbstractPattern) = internal_isequal(pat,s) 
     function internal_in(pat::AbstractPattern,itr) 
@@ -295,15 +296,15 @@ module XMLwalker
 
     # nodes searching functions
     function find_nodes!(node_vector::Vector{T},node::T,matcher::AbstractMatcher) where T
-        !matcher(nd) || push!(node_vector,node)
+        !matcher(node) || push!(node_vector,node)
         !isnothing(getfield(node,:children)) || return node_vector
         for ndi in getfield(node,:children)
-            find_nodes!(node_vector,ndi,tag)
+            find_nodes!(node_vector,ndi,matcher)
         end
         return node_vector
     end
-    function find_nodes(starting_node,search_string::AbstractString)
-
+    function find_nodes(starting_node,search_string::AbstractString,field_name::SymbolOrNothing=:tag)
+        return find_nodes(starting_node,chain_string_token_to_matcher(search_string,field_name))
     end
     function find_nodes(starting_node::T,matcher::AbstractMatcher) where T
         node_vector = Vector{T}()
@@ -314,19 +315,19 @@ module XMLwalker
         node_vector = Vector{T}()
         return find_nodes_chain!(node_vector,starting_node,ChainMatcher(xml_chain_string))
     end
-    function find_nodes_chain!(node_vector::Vector{T},nd::T,tag_chain::ChainMatcher,state::Int=1,first_node::Bool=true) where T
-        (tag,next_state) = iterate(tag_chain,state)
+    function find_nodes_chain!(node_vector::Vector{T},node::T,tag_chain::ChainMatcher,state::Int=1,first_node::Bool=true) where T
+        (matcher,next_state) = iterate(tag_chain,state)
         has_next_state = !isnothing(iterate(tag_chain,next_state))
-        if tag(nd) 
+        if matcher(node) 
             if !has_next_state
-                push!(node_vector,nd)
+                push!(node_vector,node)
                 !first_node || return node_vector
             end
         elseif first_node
             return node_vector
         end
-        !isnothing(nd.children) || return node_vector
-        for ndi in nd.children
+        !isnothing(node.children) || return node_vector
+        for ndi in node.children
             isa(ndi,T) || continue
             find_nodes_chain!(node_vector,ndi,tag_chain,next_state)
         end
