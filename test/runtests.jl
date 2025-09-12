@@ -11,6 +11,8 @@ pwd()
     @test !XMLwalker.MatchesPat("abc")("asdfg")
     @test XMLwalker.MatchesPat("abc")("abc")
     @test XMLwalker.MatchesPat(("aaa","bbb"))(("aaa","bbb"))
+    @test XMLwalker.MatchesPat([ Regex(raw"(.)\1+"), Regex("b{2,}")])(("aaa","bbb")) # regex are also supported
+    @test XMLwalker.MatchesPat(("aaa","bbb"))(("aaa","bbb"))
     @test XMLwalker.MatchesPat(["aaa","bbb"])(("aaa","bbb"))
     @test !XMLwalker.MatchesPat(["aaa","bbb"])(("ccc","bbb"))
     @test XMLwalker.MatchesPat(Dict("aaa"=>1,"bbb"=>2))(("aaa"=>1,"bbb"=>2))
@@ -32,6 +34,8 @@ pwd()
     @test !XMLwalker.ContainsPat("ab")("acb")
     @test XMLwalker.ContainsPat(("aaa"=>1,"bbb"=>2))(("aaa"=>1,"bbb"=>2, "ccc"=>10))
     @test !XMLwalker.ContainsPat(("aaa"=>1,"bbb"=>999))(("aaa"=>1,"bbb"=>2, "ccc"=>10))
+    @test XMLwalker.ContainsPat(Regex("b{2,}"))("bbb")
+    @test !XMLwalker.ContainsPat(Regex("c{2,}"))(("aaa","bbb"))
 
     a2 = A("abba") # struct with field :tag
     @test XMLwalker.ContainsPat("ab",:tag)(a2)
@@ -40,7 +44,7 @@ pwd()
     @test XMLwalker.ContainsPat(("a"=>1,"b"=>2),:tag)(a2)
     @test !XMLwalker.ContainsPat(("a"=>11,"b"=>2),:tag)(a2)
     @test XMLwalker.ContainsPat(Dict("a"=>1),:tag)(a2)
-
+    @test XMLwalker.ContainsPat(r"a",:tag)(a2)
 
     # PatContains true if the pattern contains the input
     @test XMLwalker.PatContains("abc")("ab")
@@ -107,12 +111,15 @@ root_node = NodeImitation(tag="root",children = [node1,node2])
     leaf_nodes_branches = find_nodes(root_node,XMLwalker.HasAnyKeyPat(("id",),:attributes))
     @test node11 == leaf_nodes_branches[1]
     @test node12 == leaf_nodes_branches[2]
-    #@test 
-    @test node1 == find_nodes(root_node,"branch1")[]
-    out = find_nodes(root_node,"[branch1,leaf1]") # [] means that one of the patterns should be matched
+
+end
+
+@testset "single string matchers" begin
+    @test node1 == find_nodes(root_node,"branch1",:tag)[]
+    out = find_nodes(root_node,"[branch1,leaf1]") # [] means that at least one of the patterns should be matched
     @test (node1 ∈ out) && (node11 ∈ out)
 end
 
+find_nodes(root_node,"branch1",:tag)
 
-m = XMLwalker.chain_string_token_to_matcher("[branch1,leaf1]")
-m(node2)
+XMLwalker.chain_string_token_to_matcher("branch1",:tag)

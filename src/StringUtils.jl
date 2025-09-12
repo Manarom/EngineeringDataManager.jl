@@ -6,7 +6,11 @@ const has_asterisk = contains("*")
 const has_equal = contains("=")
 const has_dot = contains(".")
 const has_regex = contains("::regex")
-remove_regex(s) = strstr(extract_before(s,"::regex"))
+function remove_regex(s::AbstractString) 
+    s_rem = strstr(extract_before(s,"::regex"))
+    return isempty(s_rem) ? s : s_rem
+end
+remove_asterisk(s) = replace(s,"*"=>"")
 to_regex(s) = s |> remove_regex |> Regex 
 const has_text = contains("::text")
 remove_text(s) = strstr(extract_before(s,"::text"))
@@ -77,7 +81,7 @@ Splits string by first equality symbol `=`
 """
 function split_equality(s::AbstractString)
     m = match(Regex("\\Q=\\E"),s)
-    return isnothing(m) ? (s,"") : (s[1:m.offset-1],s[m.offset+1 : end])
+    return isnothing(m) ? (s,"") : (strstr(s[1:m.offset-1]),strstr(s[m.offset+1 : end]))
 end
 
 function extract_between(s::AbstractString,pat_left::AbstractString,pat_right::AbstractString;include_pats::Bool=false)
@@ -156,3 +160,5 @@ for (name_str,left_char,right_char) in zip(("_square","_curl","_round"),('[','{'
     end
 end
 is_embraced(s) = is_embraced_curl(s) || is_embraced_square(s) || is_embraced_round(s)
+is_embraced_square_or_curl(s) = is_embraced_curl(s) || is_embraced_square(s)
+

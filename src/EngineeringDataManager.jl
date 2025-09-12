@@ -71,10 +71,10 @@ module EngineeringDataManager
     has_single_child(node) =  !isnothing(node.children) && length(node.children) == 1
     has_single_element(node_vect) = isa(node_vect,AbstractVector) && length(node_vect) == 1
 
-    function find_nodes(tag::String="EngineeringData", field_type::SymbolOrNothing=:tag) 
+    #=function find_nodes(tag::String="EngineeringData", field_type::SymbolOrNothing=:tag) 
         is_xml_ok()
         find_nodes(XML_DOC[],MatchesPat(tag,field_type))
-    end
-    find_nodes(starting_node,tag::String,field_type::SymbolOrNothing=:tag) = find_nodes(starting_node,MatchesPat(tag,field_type))
+    end=#
+    #find_nodes(starting_node,tag::String,field_type::SymbolOrNothing=:tag) = find_nodes(starting_node,MatchesPat(tag,field_type))
 
 end # module end

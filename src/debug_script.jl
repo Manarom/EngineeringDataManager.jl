@@ -1,24 +1,7 @@
 using Revise,XML
 pwd()
 includet(raw"EngineeringDataManager.jl")
-data  = XML.read(EngineeringDataManager.ENG_DATA_FILE[],Node)
-
-EngineeringDataManager.read_engineering_data()
-param_details = EngineeringDataManager.find_nodes(EngineeringDataManager.find_nodes("Metadata")[],"ParameterDetails")
-
-(material_names,materials_nodes) = EngineeringDataManager.material_nodes()
-prop_node = EngineeringDataManager.find_nodes_chain(materials_nodes[1],"Material/BulkDetails/PropertyData")
-
-XML.attributes(prop_node[1])
-
-meta_data_node = EngineeringDataManager.find_nodes("Metadata")
-
-
-
-EngineeringDataManager.extract_between("[A b]",Regex("\\["),Regex("\\]"))
-
-EngineeringDataManager.fill_parameters_ids()
-EngineeringDataManager.ParamIDs[]
+using .EngineeringDataManager.XMLwalker
 
 using OrderedCollections
 AttrType = Union{OrderedDict,Nothing,String}
@@ -36,6 +19,7 @@ begin
     node2 = NodeImitation(tag="branch2",children = [node21])
     root_node = NodeImitation(tag="root",children = [node1,node2])
 end
-mm = EngineeringDataManager.parse_field_string("attributes=*sd")
-mm(node21)
-mm(node12)
+
+#m = XMLwalker.chain_string_token_to_matcher("{branch1, leaf1 }")
+# find_nodes(root_node,m) 
+XMLwalker.field_string_to_matcher("abltabl([*A,B,C])")

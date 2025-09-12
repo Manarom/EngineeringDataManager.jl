@@ -11,18 +11,30 @@ module XMLwalker
     abstract type AbstractMatcher{T,P} end
 
     include("StringUtils.jl")
+
     is_matched(pat::AbstractPattern,s::AbstractString) = !isnothing(match(pat,s))
+    is_matched(pat::AbstractString,s::AbstractPattern) = !isnothing(match(s,pat))
+    is_matched(pat) = Base.Fix1(is_matched,pat)
+
     internal_isequal(a,b) = isequal(a,b)
     internal_isequal(a::AbstractPattern,b::AbstractString) = is_matched(a,b)
     internal_isequal(a::AbstractString,b::AbstractPattern) = is_matched(b,a)
+    internal_isequal(a::Pair,b::AbstractPattern) = isa(a[1],AbstractString) && is_matched(b,a[1])
+    internal_isequal(b::AbstractPattern,a::Pair) = isa(a[1],AbstractString) && is_matched(b,a[1])
+    internal_isequal(pat) = Base.Fix1(internal_isequal,pat)
 
+    internal_contains(collection,pattern) = contains(collection,pattern) 
+    internal_contains(collection, a::AbstractPattern) = any(bi->internal_isequal(a,bi),collection)
+    internal_contains(collection::AbstractString, pattern::AbstractPattern) = is_matched(collection,pattern)
+    internal_contains(collection::AbstractPattern , pattern::AbstractString) = is_matched(collection,pattern)
 
-    internal_contains(collection,b) = contains(collection,b) 
-    internal_contains(a::AbstractPattern, b) = any(bi->internal_isequal(a,bi),b)
     internal_contains(::Nothing,b) = false
     internal_contains(collection,::Nothing) = false
-    swap_contains(a,b) = internal_contains(b,a)
+    internal_contains(pat) = Base.Fix2(internal_contains,pat) # can be applied to collection
 
+
+    swap_contains(pattern,collection) = internal_contains(collection,pattern)
+    swap_contains(pattern) = Base.Fix1(swap_contains,pattern)
 
 
     always_true(_,_) = true
@@ -31,6 +43,8 @@ module XMLwalker
     internal_in(a::AbstractString,b::AbstractString) = internal_isequal(a,b)
     internal_in(pat::AbstractPattern,s::AbstractString) = internal_isequal(pat,s) 
     internal_in(pat::AbstractString ,s::AbstractPattern) = internal_isequal(pat,s) 
+    internal_in(pat) = Base.Fix1(internal_in,pat)
+
     function internal_in(pat::AbstractPattern,itr) 
         for i_i in itr 
             !is_matched(pat,i_i) || return true
@@ -78,8 +92,12 @@ module XMLwalker
             pat::P
             $matcher_type(s::P,type::SymbolOrNothing=nothing) where P =  new{type,P}(s)
         end
-        @eval $(d.fun)(pat::P,input,::Nothing) where P <: Union{AbstractPattern,AbstractString,Number} =  $(d.internal)(pat,input)
-        @eval $(d.fun)(pat::P,input,T::Symbol) where P <: Union{AbstractPattern, AbstractString,Number} = hasproperty(input,T) && $(d.internal)(pat,getproperty(input,T))
+        @eval $(d.fun)(pat::P,input,::Nothing) where P <: Union{AbstractPattern,AbstractString,Number} =  $(d.consumer)($(d.internal)(pat),input)
+        @eval $(d.fun)(pat::P,input::AbstractString,::Nothing) where P <: Union{AbstractPattern,AbstractString,Number} =  $(d.internal)(pat,input)
+        @eval $(d.fun)(pat::P,input,T::Symbol) where P <: Union{AbstractPattern, AbstractString,Number} = hasproperty(input,T) && $(d.internal)(pat, getproperty(input,T))
+        @eval $(d.fun)(pat,input) = $(d.fun)(pat,input,nothing)
+
+
         @eval (tag::$matcher_type{T})(input) where T = $(d.fun)(tag.pat,input,T)
         (iterate_over, look_in, in_checker) = if matcher_type == :PatContains
                                                     (:_input, :pat, :internal_in) 
@@ -202,7 +220,12 @@ module XMLwalker
     end
     Base.iterate(t::ChainMatcher) = iterate(t.pat_vect);
     Base.iterate(t::ChainMatcher,state) = iterate(t.pat_vect,state);
-    function chain_string_to_matchers(s::AbstractString,root_field_name::SymbolOrNothing=:tag)
+    """
+    chain_string_to_matchers(s::AbstractString,root_field_name::SymbolOrNothing=:tag)
+
+Converts chain string with multiple tokens to Matchers vector
+"""
+function chain_string_to_matchers(s::AbstractString,root_field_name::SymbolOrNothing=:tag)
         tag_vect = Vector{AllTagMatchersUnion}()
         counter = 0
         for si in eachsplit(s,TOKENS_SEPARATOR)
@@ -211,52 +234,110 @@ module XMLwalker
         end
         return tag_vect
     end
-    function field_string_to_matcher(s::AbstractString)
+
+
+
+    """
+    field_string_to_matcher(s::AbstractString)
+
+
+Converts field string to a single `<:AbstractMatcher` object, field string can be `"field_name = args1"` or `"field_name(args2)"`
+In the first case, `args1` can be a single value number or string or regex-style object viz [a,b,c] or {a,b,c}, where `{}` or `[]`   
+braces tell that `all` or `any` args values viz "a", "b" and "c" should be in `field_name` field. All `args1`  elements must be separated 
+by the comma  `,`.
+
+In the second case `"field_name(args1)"`, the content of `(...)` is interpreted as arguments which are the members of AbstractDict
+stored in `field_name`, args2 must be embraced in `{}` or `[]`. E.g. `"field_name([a,b,c] )"` is interpreted as `any of keys "a","b"
+ and "c" must be among keys of `field_name` dictionary, when args1 also contains `=`, e.g. `args1 = [a=1,b=2,c=3]` this means
+key-value pairs specification, field_name({a=1,b=2,c=3}) means that `field_name` dictionary must contain the following 
+key-value pairs: `"a"=>1,"b"=>2,"c"=>3` 
+
+"""
+function field_string_to_matcher(s::AbstractString)
         #@show s
         if has_round(s) # field_name(....) syntax for checking the arguments
-            field_name = Symbol(extract_before(s,"("))
-            args = extract_embraced_round(s)
+            field_name = Symbol(strstr(extract_before(s,"(")))
+            args = extract_embraced_round(strstr(s))
             is_embraced(args) || error("set of keys must be embraced in {...} or [...]")
-            is_only_keys = !has_equal(args) # field has keys but not key-value pairs
-            is_contains_regex = has_regex(args) # check if arguments string contains ::regex
-            if is_embraced_curl(args)
-                #args = extract_embraced_round(s) # extracting specified field arguments
-                args_vect = extract_embraced_args_curl(args)
-                return (is_only_keys && !is_contains_regex) ? HasAllKeysPat(args_vect,field_name) : ContainsAllPats(args_vect,field_name)
-            elseif is_embraced_square(args)
-                args_vect = extract_embraced_args_square(args)
-                return (is_only_keys && !is_contains_regex) ? HasAnyKeyPat(args_vect,field_name) : ContainsAnyPat(args_vect,field_name)
-            else
-                error("Unsupported field_name = $(field_name) and arguments = $(args)")
-            end
+            convert_braced_arguments_to_matcher(args,field_name,as_keys=true)
         elseif has_equal(s)
             (field_name_string,value) = split_equality(s) # parses as key-value pair
-            # @show (field_name_string,value)
             length(value) > 0 || error("Incorrect string format $(s)")
             field_name = Symbol(field_name_string)
             try_parse = tryparse(Float64,value)
-            isnothing(try_parse) || return simple_string_or_number_to_matcher(try_parse,field_name)
-            if !is_embraced_curl(value) && !is_embraced_square(value) # simple argument has equalities but no round or squares
-                return simple_string_or_number_to_matcher(value,field_name)
-            else # embraced!!! thus it is a collection of key-value pairs
-                #@show value
-                if is_embraced_curl(value)
-                    matchers_set = MatchersSet(:all)
-                    values_vect = extract_embraced_args_curl(value)
-                else
-                    matchers_set = MatchersSet(:any)
-                    values_vect = extract_embraced_args_square(value)
-                end
-                for vi in values_vect
-                    push!(matchers_set, simple_string_or_number_to_matcher(vi,field_name))
-                end
-                return matchers_set
-            end
+            isnothing(try_parse) || return single_string_or_number_to_matcher(try_parse,field_name)
+            return convert_braced_arguments_to_matcher(value,field_name,as_keys=false)
         else
             error("Incorrect string format $(s)")
         end
     end
-    function simple_string_or_number_to_matcher(value::AbstractString,field_name::SymbolOrNothing=:tag)
+
+    function extract_embraced_args_square_or_curl(s;convert_to_regex::Bool=false) 
+        if !convert_to_regex
+            return  is_embraced_square(s) ? (extract_embraced_args_square(s),:any) : (extract_embraced_args_curl(s),:all)
+        else
+            if  is_embraced_square(s) 
+                return ((extract_embraced_args_square ∘ convert_args_vector_to_regex_vector)(s),:any)
+            else 
+                return ((extract_embraced_args_curl ∘ convert_args_vector_to_regex_vector)(s),:all) 
+            end 
+        end
+    end
+
+    """
+    convert_args_vector_to_regex_vector(input::AbstractVector)
+
+Converts the vector of args to regex, removes `*` and `::regex` if any
+
+"""
+function convert_args_vector_to_regex_vector(input::AbstractVector)
+        out_vect = Vector{Regex}(undef,length(input))
+        for (i,vi) in enumerate(input) 
+            vi_type = typeof(vi)             
+            if vi_type <: Pair
+                out_vect[i] = vi[1] |> remove_asterisk |> remove_regex |>  Regex
+            else
+                out_vect[i] =  vi |> strstr |> remove_asterisk |> remove_regex |>  Regex
+            end   
+        end
+        return out_vect
+    end
+    function convert_braced_arguments_to_matcher(args::AbstractString,field_name::SymbolOrNothing; as_keys::Bool=false)
+        if !has_asterisk(args) 
+            is_only_keys = as_keys && !has_equal(args) # field has keys but not key-value pairs
+            is_contains_regex = has_regex(args) # check if arguments string contains ::regex
+            (args_vect, set_type) = extract_embraced_args_square_or_curl(args, convert_to_regex = is_contains_regex)
+            if set_type == :all 
+                return (is_only_keys && !is_contains_regex) ? HasAllKeysPat(args_vect,field_name) : ContainsAllPats(args_vect,field_name)
+            elseif set_type == :any
+                return (is_only_keys && !is_contains_regex) ? HasAnyKeyPat(args_vect,field_name) : ContainsAnyPat(args_vect,field_name)
+            else
+                error("Unsupported field_name = $(field_name) and arguments = $(args)")
+            end
+        else
+            if !is_embraced_curl(args) && !is_embraced_square(args) # simple argument has equalities but no braces
+                return single_string_or_number_to_matcher(args,field_name)
+            else # embraced!!! 
+                (values_vect,set_type) = extract_embraced_args_square_or_curl(args,convert_to_regex = as_key)
+                if as_keys # 
+                    if set_type == :all
+                       return ContainsAllPats(values_vect_converted,field_name)   
+                    elseif set_type == :any
+                        return ContainsAnyPat(values_vect_converted,field_name) 
+                    else
+                        error("Unsupported field_name = $(field_name) and arguments = $(args)")
+                    end
+                end
+                matchers_set = MatchersSet(set_type)
+                for vi in values_vect
+                    push!(matchers_set, single_string_or_number_to_matcher(vi,field_name))
+                end
+                return matchers_set
+            end
+        end
+    end    
+
+    function single_string_or_number_to_matcher(value::AbstractString,field_name::SymbolOrNothing=:tag)
         if has_regex(value) 
             value_str = remove_regex(value)
             return  MatchesPat(Regex(value_str),field_name) 
@@ -264,33 +345,43 @@ module XMLwalker
             return MatchesPat(value,field_name)
         elseif has_asterisk(value)
             value != "*" || return AnyPat(value,field_name)
-            value = replace(value,"*"=>"")
+            value = remove_asterisk(value)
             return ContainsPat(value,field_name) 
         else
             error("Unsupported string $(value)")
         end
     end
-    simple_string_or_number_to_matcher(value::Number,field_name::Symbol=:tag) = MatchesPat(value,field_name)
+    single_string_or_number_to_matcher(value::Number,field_name::Symbol=:tag) = MatchesPat(value,field_name)
     """
         chain_string_token_to_matcher(s::String)
 
-    Function to convert single expression into the matcher object
+    Function to convert single string expression into the matcher object 
     """
     function chain_string_token_to_matcher(s::String,field_name::SymbolOrNothing=:tag)
-        if is_simple_pattern(s) 
-            return simple_string_or_number_to_matcher(s,field_name)
-        elseif !has_nondigit_dot(s) && is_embraced_square(s)
-            si_patt = extract_embraced_args_square(s)
-            length(si_patt) > 0 || error("Incorrect syntax $(s)")
-            any(x->isa(x,Number),si_patt) || return ContainsAnyPat(si_patt,field_name)
-            return ContainsAnyPat(string.(si_patt),field_name)
+        if is_simple_pattern(s) # does not contain any special symbols like braces, 
+            # dots and equal sighns, but can contain regex ::regex 
+            return single_string_or_number_to_matcher(s,field_name)
+        elseif !has_nondigit_dot(s) # has no encoded field, but has 
+            if !has_asterisk(s) && !has_regex(s) # arguments like 
+                if is_embraced_square(s) 
+                    si_patt = extract_embraced_args_square(s)
+                    length(si_patt) > 0 || error("Incorrect syntax $(s)")
+                    any(x->isa(x,Number),si_patt) || return ContainsAnyPat(si_patt,field_name)
+                    return ContainsAnyPat(string.(si_patt),field_name)
+                else
+
+
+                end
+            else
+
+            end
         elseif has_nondigit_dot(s)
             splitted = split_tag_and_field_name(s)
             tag_matcher = chain_string_token_to_matcher(splitted[1],:tag)
             field_matcher = field_string_to_matcher(splitted[2])
             return MatchersSet((tag_matcher,field_matcher),:all)
         else
-            return MatchesPat(s,field_name)
+            return error("Incorrect syntax $(s)")
         end
     end
 
@@ -304,7 +395,11 @@ module XMLwalker
         return node_vector
     end
     function find_nodes(starting_node,search_string::AbstractString,field_name::SymbolOrNothing=:tag)
-        return find_nodes(starting_node,chain_string_token_to_matcher(search_string,field_name))
+        if contains(search_string,TOKENS_SEPARATOR) # string contains several tokens
+            find_nodes_chain(starting_node,search_string)
+        else
+             find_nodes(starting_node,chain_string_token_to_matcher(search_string,field_name))
+        end
     end
     function find_nodes(starting_node::T,matcher::AbstractMatcher) where T
         node_vector = Vector{T}()
