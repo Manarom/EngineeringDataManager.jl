@@ -118,8 +118,8 @@ end
     @test node1 == find_nodes(root_node,"branch1",:tag)[]
     out = find_nodes(root_node,"[branch1,leaf1]") # [] means that at least one of the patterns should be matched
     @test (node1 ∈ out) && (node11 ∈ out)
+    out = find_nodes(root_node,"*branch")
+    @test (node1 ∈ out) && (node2 ∈ out)
 end
 
-find_nodes(root_node,"branch1",:tag)
 
-XMLwalker.chain_string_token_to_matcher("branch1",:tag)

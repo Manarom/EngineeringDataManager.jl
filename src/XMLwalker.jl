@@ -260,7 +260,7 @@ function field_string_to_matcher(s::AbstractString)
             args = extract_embraced_round(strstr(s))
             is_embraced(args) || error("set of keys must be embraced in {...} or [...]")
             convert_braced_arguments_to_matcher(args,field_name,as_keys=true)
-        elseif has_equal(s)
+        elseif has_equal(s) #field_name=.... syntax to check the value of field itself
             (field_name_string,value) = split_equality(s) # parses as key-value pair
             length(value) > 0 || error("Incorrect string format $(s)")
             field_name = Symbol(field_name_string)
@@ -273,13 +273,14 @@ function field_string_to_matcher(s::AbstractString)
     end
 
     function extract_embraced_args_square_or_curl(s;convert_to_regex::Bool=false) 
+        is_embraced_square_or_curl(s) || error("Arguments must be embraced in square or curl braces like [a,b,c] or {a,b,c}")
         if !convert_to_regex
             return  is_embraced_square(s) ? (extract_embraced_args_square(s),:any) : (extract_embraced_args_curl(s),:all)
         else
             if  is_embraced_square(s) 
-                return ((extract_embraced_args_square ∘ convert_args_vector_to_regex_vector)(s),:any)
+                return ((convert_args_vector_to_regex_vector  ∘ extract_embraced_args_square)(s),:any)
             else 
-                return ((extract_embraced_args_curl ∘ convert_args_vector_to_regex_vector)(s),:all) 
+                return ((convert_args_vector_to_regex_vector ∘  extract_embraced_args_curl)(s),:all) 
             end 
         end
     end
@@ -296,14 +297,52 @@ function convert_args_vector_to_regex_vector(input::AbstractVector)
             vi_type = typeof(vi)             
             if vi_type <: Pair
                 out_vect[i] = vi[1] |> remove_asterisk |> remove_regex |>  Regex
+            elseif vi_type <: Regex
+                out_vect[i] = vi
             else
                 out_vect[i] =  vi |> strstr |> remove_asterisk |> remove_regex |>  Regex
             end   
         end
         return out_vect
     end
-    function convert_braced_arguments_to_matcher(args::AbstractString,field_name::SymbolOrNothing; as_keys::Bool=false)
-        if !has_asterisk(args) 
+    #convert_args_vector_to_regex_vector(input::AbstractString) = convert_args_vector_to_regex_vector([input])
+    """
+    convert_braced_arguments_to_matcher(args::AbstractString,field_name::SymbolOrNothing; as_keys::Bool=false)
+Input variables:
+args - string to be converted, e.g. "{a,b,c}"
+field_name - field name of the matcher 
+as_keys - if true all args are interpreted as keys of key-value pairs of `field_name` dictionary
+
+Braced arguments like `{a,b,c}`, `[c,d,f]` are converted to matcher with the field name `field_name`
+`as_keys` flag means that arges are interpreted as elements contained in dictionary `field_name`, otherwise
+as  - values the field `field_name` should match itself.
+```julia
+struct A  tag end
+matcher  = convert_braced_arguments_to_matcher("[a,b,c]",:tag,as_keys=false)
+matcher(A("a")) # true
+matcher(A(["a","b"])) # true
+
+matcher  = convert_braced_arguments_to_matcher("[a,b,c]",:tag,as_keys=true)
+matcher(A(Dict("a"=>1)))) # true
+
+matcher  = convert_braced_arguments_to_matcher("[a=1,a=3]",:tag,as_keys=true)
+matcher(A(Dict("a"=>2)))) # false because key-value doesnt matches  any  of `a=>1.0` or `a=>3`
+
+```
+If any of embraced patterns contain `::regex` or `*` symbol all of them are forced to
+be converted to regular expressions, if they are keys their values are ignored
+```julia
+matcher  = convert_braced_arguments_to_matcher("[*a=1]",:tag,as_keys=true)
+
+
+```
+
+
+Returned matcher can be used to find nodes see [`find_nodes`](@ref)
+
+"""
+function convert_braced_arguments_to_matcher(args::AbstractString,field_name::SymbolOrNothing; as_keys::Bool=false)
+        if !has_asterisk(args) # if 
             is_only_keys = as_keys && !has_equal(args) # field has keys but not key-value pairs
             is_contains_regex = has_regex(args) # check if arguments string contains ::regex
             (args_vect, set_type) = extract_embraced_args_square_or_curl(args, convert_to_regex = is_contains_regex)
@@ -318,7 +357,7 @@ function convert_args_vector_to_regex_vector(input::AbstractVector)
             if !is_embraced_curl(args) && !is_embraced_square(args) # simple argument has equalities but no braces
                 return single_string_or_number_to_matcher(args,field_name)
             else # embraced!!! 
-                (values_vect,set_type) = extract_embraced_args_square_or_curl(args,convert_to_regex = as_key)
+                (values_vect,set_type) = extract_embraced_args_square_or_curl(args,convert_to_regex = as_keys)
                 if as_keys # 
                     if set_type == :all
                        return ContainsAllPats(values_vect_converted,field_name)   
@@ -351,6 +390,7 @@ function convert_args_vector_to_regex_vector(input::AbstractVector)
             error("Unsupported string $(value)")
         end
     end
+    single_string_or_number_to_matcher(value::Regex,field_name::SymbolOrNothing=:tag) = MatchesPat(value,field_name)
     single_string_or_number_to_matcher(value::Number,field_name::Symbol=:tag) = MatchesPat(value,field_name)
     """
         chain_string_token_to_matcher(s::String)
@@ -362,20 +402,8 @@ function convert_args_vector_to_regex_vector(input::AbstractVector)
             # dots and equal sighns, but can contain regex ::regex 
             return single_string_or_number_to_matcher(s,field_name)
         elseif !has_nondigit_dot(s) # has no encoded field, but has 
-            if !has_asterisk(s) && !has_regex(s) # arguments like 
-                if is_embraced_square(s) 
-                    si_patt = extract_embraced_args_square(s)
-                    length(si_patt) > 0 || error("Incorrect syntax $(s)")
-                    any(x->isa(x,Number),si_patt) || return ContainsAnyPat(si_patt,field_name)
-                    return ContainsAnyPat(string.(si_patt),field_name)
-                else
-
-
-                end
-            else
-
-            end
-        elseif has_nondigit_dot(s)
+            return convert_braced_arguments_to_matcher(s,field_name; as_keys=false)
+        elseif has_nondigit_dot(s) # string like "field_name.attribute_name()
             splitted = split_tag_and_field_name(s)
             tag_matcher = chain_string_token_to_matcher(splitted[1],:tag)
             field_matcher = field_string_to_matcher(splitted[2])
@@ -394,14 +422,14 @@ function convert_args_vector_to_regex_vector(input::AbstractVector)
         end
         return node_vector
     end
-    function find_nodes(starting_node,search_string::AbstractString,field_name::SymbolOrNothing=:tag)
+    function find_nodes(starting_node, search_string::AbstractString, field_name::SymbolOrNothing = :tag)
         if contains(search_string,TOKENS_SEPARATOR) # string contains several tokens
             find_nodes_chain(starting_node,search_string)
         else
              find_nodes(starting_node,chain_string_token_to_matcher(search_string,field_name))
         end
     end
-    function find_nodes(starting_node::T,matcher::AbstractMatcher) where T
+    function find_nodes(starting_node::T, matcher::AbstractMatcher) where T
         node_vector = Vector{T}()
         find_nodes!(node_vector,starting_node,matcher)
         return node_vector

@@ -14,8 +14,8 @@ remove_asterisk(s) = replace(s,"*"=>"")
 to_regex(s) = s |> remove_regex |> Regex 
 const has_text = contains("::text")
 remove_text(s) = strstr(extract_before(s,"::text"))
-const NON_DIGIT_DOT_REGEX =  r"(?<!\d)\.(?!\d)" # regex to check for non-digit dot when parsing string
-const DIGIT_DOT_REGEX  = r"(?<=\d)\.(?=\d)"
+const NON_DIGIT_DOT_REGEX = r"\.\D+" #r"(?<!\d)\.(?!\d)" # regex to check for non-digit dot when parsing string
+const DIGIT_DOT_REGEX  = r"\d+\.\d+" #r"(?<=\d)\.(?=\d)"
 """
     has_nondigit_dot(s::AbstractString)
 
@@ -41,15 +41,7 @@ end
 """
 Regex to check if string contains braces, non-digital dots and equality symbols
 """
-const IS_SIMPLE_REGEX = begin
-    str ="["
-    for c in "{}[]()="
-        global str *="\\Q$(c)\\E"
-    end
-    str *=raw"(?<!\d)\.(?!\d)"
-    str *="]"
-    Regex(str)
-end
+const IS_SIMPLE_REGEX = r"(\.\D+)|([\{\]\}\[\)\(\=])"  
 """
     is_simple_pattern(s::AbstractString)
 
@@ -117,13 +109,15 @@ function parse_single_string_or_number(s_str)
     s_parsed = tryparse(Float64,s_str)
     if isnothing(s_parsed)
         !contains(s_str,"::text") || return strstr(extract_before(s_str,"::text"))
-        !has_regex(s_str) || return to_regex(s_str)
+        !has_regex(s_str)  || return to_regex(s_str)
+        !has_asterisk(s_str) || return s_str |> remove_asterisk |> to_regex
         return strstr(s_str);
     else
         return s_parsed
     end
 end
 function split_delimited_args(s::AbstractString)
+    contains(s,",") || return parse_single_string_or_number(s)
     return parse_single_string_or_number.(split(s,","))
 end
 function first_match(s::AbstractString,pat)
