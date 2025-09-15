@@ -1,8 +1,8 @@
 module EngineeringDataManager
     using XML,Sockets,OrderedCollections #,StructTypes,Observables,
 
-    include("XMLwalker.jl")
-    using .XMLwalker # exports find_nodes and find_nodes_chain
+    #include("XMLwalker.jl")
+    #using .XMLwalker # exports find_nodes and find_nodes_chain
 
     const SymbolOrNothing = Union{Symbol,Nothing}
     const ENG_DATA_FILE = Ref(".\\src\\EngineeringData.xml")
