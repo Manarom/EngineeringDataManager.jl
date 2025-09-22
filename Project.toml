@@ -12,6 +12,7 @@ Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 Sockets = "6462fe0b-24de-5631-8697-dd941f90decc"
 StructTypes = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
 XML = "72c71f33-b9b6-44de-8c94-c961784809e2"
+XMLWalker = "9cd7548c-8553-4cf3-b148-d77f511bbfb9"
 
 [compat]
 InteractiveUtils = "1.11.0"
@@ -22,6 +23,7 @@ Revise = "3.9.0"
 Sockets = "1.11.0"
 StructTypes = "1.11.0"
 XML = "0.3.7"
+XMLWalker = "0.1.0"
 julia = "1.11"
 
 [extras]
