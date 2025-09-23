@@ -10,19 +10,19 @@
           <PropertyData property="pr0">
             <Data format="string">-</Data>
             <Qualifier name="Localized Name">Color</Qualifier>
-            <ParameterValue parameter="pa0" format="float">
+            <ParameterValue parameter="pa1" format="float">
               <Data>103</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa1" format="float">
+            <ParameterValue parameter="pa2" format="float">
               <Data>192</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa2" format="float">
+            <ParameterValue parameter="pa4" format="float">
               <Data>205</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa3" format="string">
+            <ParameterValue parameter="pa5" format="string">
               <Data>Appearance</Data>
             </ParameterValue>
           </PropertyData>
@@ -30,17 +30,17 @@
             <Data format="string">-</Data>
             <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
             <Qualifier name="Localized Name">Density</Qualifier>
-            <ParameterValue parameter="pa4" format="string">
+            <ParameterValue parameter="pa0" format="string">
               <Data>Interpolation Options</Data>
               <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
               <Qualifier name="Normalized">True</Qualifier>
               <Qualifier name="Cached">True</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa5" format="float">
+            <ParameterValue parameter="pa3" format="float">
               <Data>1820</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa6" format="float">
+            <ParameterValue parameter="pa9" format="float">
               <Data>7.88860905221012e-31</Data>
               <Qualifier name="Variable Type">Independent</Qualifier>
               <Qualifier name="Field Variable">Temperature</Qualifier>
@@ -50,23 +50,23 @@
               <Qualifier name="Field Units">C</Qualifier>
             </ParameterValue>
           </PropertyData>
-          <PropertyData property="pr4">
+          <PropertyData property="pr3">
             <Data format="string">-</Data>
             <Qualifier name="Definition">Constant Pressure</Qualifier>
             <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
             <Qualifier name="Symbol">Cᵨ</Qualifier>
             <Qualifier name="Localized Name">Specific Heat Constant Pressure</Qualifier>
-            <ParameterValue parameter="pa4" format="string">
+            <ParameterValue parameter="pa0" format="string">
               <Data>Interpolation Options</Data>
               <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
               <Qualifier name="Normalized">True</Qualifier>
               <Qualifier name="Cached">True</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa9" format="float">
+            <ParameterValue parameter="pa7" format="float">
               <Data>700,730,800,870,920,965,1000,1028,1050,1067,1080,1087,1090,1090,1090</Data>
               <Qualifier name="Variable Type">Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa6" format="float">
+            <ParameterValue parameter="pa9" format="float">
               <Data>20,50,100,150,200,250,300,350,400,450,500,550,600,700,800</Data>
               <Qualifier name="Variable Type">Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent</Qualifier>
               <Qualifier name="Field Variable">Temperature</Qualifier>
@@ -76,22 +76,22 @@
               <Qualifier name="Field Units">C</Qualifier>
             </ParameterValue>
           </PropertyData>
-          <PropertyData property="pr6">
+          <PropertyData property="pr8">
             <Data format="string">-</Data>
             <Qualifier name="Behavior">Isotropic</Qualifier>
             <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
             <Qualifier name="Localized Name">Isotropic Thermal Conductivity</Qualifier>
-            <ParameterValue parameter="pa4" format="string">
+            <ParameterValue parameter="pa0" format="string">
               <Data>Interpolation Options</Data>
               <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
               <Qualifier name="Normalized">True</Qualifier>
               <Qualifier name="Cached">True</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa11" format="float">
+            <ParameterValue parameter="pa16" format="float">
               <Data>0.54,0.57,0.61,0.646,0.658,0.66,0.657,0.65,0.63</Data>
               <Qualifier name="Variable Type">Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa6" format="float">
+            <ParameterValue parameter="pa9" format="float">
               <Data>20,100,200,300,400,500,600,700,800</Data>
               <Qualifier name="Variable Type">Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent</Qualifier>
               <Qualifier name="Field Variable">Temperature</Qualifier>
@@ -101,10 +101,173 @@
               <Qualifier name="Field Units">C</Qualifier>
             </ParameterValue>
           </PropertyData>
-          <PropertyData property="pr8">
+          <PropertyData property="pr25">
             <Data format="string">-</Data>
             <Qualifier name="Temperature">Temperature:TEMP</Qualifier>
             <Qualifier name="Localized Name">Field Variable</Qualifier>
+          </PropertyData>
+        </BulkDetails>
+      </Material>
+      <Material>
+        <BulkDetails>
+          <Name>Polystyrene, high impact (HIPS)</Name>
+          <Description>High impact polystyrene (HIPS)
+&lt;br&gt;&lt;br&gt;Sample materials data from Granta Design. Additional data and information available through the &lt;exta href="https://www.grantadesign.com/ansysdata"&gt;Granta website&lt;/exta&gt;.
+&lt;br&gt;Granta provides no warranty for the accuracy of the data.</Description>
+          <PropertyData property="pr1">
+            <Data format="string">-</Data>
+            <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
+            <ParameterValue parameter="pa0" format="string">
+              <Data>Interpolation Options</Data>
+              <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
+              <Qualifier name="Normalized">True</Qualifier>
+              <Qualifier name="Cached">True</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa3" format="float">
+              <Data>1040</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr5">
+            <Data format="string">-</Data>
+            <Qualifier name="Behavior">Isotropic</Qualifier>
+            <Qualifier name="Derive from">Young's Modulus and Poisson's Ratio</Qualifier>
+            <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
+            <ParameterValue parameter="pa0" format="string">
+              <Data>Interpolation Options</Data>
+              <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
+              <Qualifier name="Normalized">True</Qualifier>
+              <Qualifier name="Cached">True</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa11" format="float">
+              <Data>1720000000</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa13" format="float">
+              <Data>0.407</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa14" format="float">
+              <Data>3082437275.98566</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa15" format="float">
+              <Data>611229566.453447</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr8">
+            <Data format="string">-</Data>
+            <Qualifier name="Behavior">Isotropic</Qualifier>
+            <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
+            <ParameterValue parameter="pa0" format="string">
+              <Data>Interpolation Options</Data>
+              <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
+              <Qualifier name="Normalized">True</Qualifier>
+              <Qualifier name="Cached">True</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa16" format="float">
+              <Data>0.157</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr9">
+            <Data format="string">-</Data>
+            <Qualifier name="Definition">Secant</Qualifier>
+            <Qualifier name="Behavior">Isotropic</Qualifier>
+            <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
+            <ParameterValue parameter="pa0" format="string">
+              <Data>Interpolation Options</Data>
+              <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
+              <Qualifier name="Normalized">True</Qualifier>
+              <Qualifier name="Cached">True</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa17" format="float">
+              <Data>7.95e-05</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr10">
+            <Data format="string">-</Data>
+            <Qualifier name="Definition">Secant</Qualifier>
+            <Qualifier name="Behavior">Isotropic</Qualifier>
+            <ParameterValue parameter="pa18" format="float">
+              <Data>22</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa5" format="string">
+              <Data>Coefficient of Thermal Expansion</Data>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr3">
+            <Data format="string">-</Data>
+            <Qualifier name="Definition">Constant Pressure</Qualifier>
+            <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
+            <Qualifier name="Symbol">Cᵨ</Qualifier>
+            <ParameterValue parameter="pa0" format="string">
+              <Data>Interpolation Options</Data>
+              <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
+              <Qualifier name="Normalized">True</Qualifier>
+              <Qualifier name="Cached">True</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa7" format="float">
+              <Data>1400</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr0">
+            <Data format="string">-</Data>
+            <ParameterValue parameter="pa1" format="float">
+              <Data>0</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa2" format="float">
+              <Data>153</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa4" format="float">
+              <Data>255</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa5" format="string">
+              <Data>Appearance</Data>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr6">
+            <Data format="string">-</Data>
+            <ParameterValue parameter="pa10" format="float">
+              <Data>28000000</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr7">
+            <Data format="string">-</Data>
+            <ParameterValue parameter="pa12" format="float">
+              <Data>29200000</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr13">
+            <Data format="string">-</Data>
+            <Qualifier name="Behavior">Isotropic</Qualifier>
+            <ParameterValue parameter="pa21" format="float">
+              <Data>179000000000000</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa9" format="float">
+              <Data>7.88860905221012e-31</Data>
+              <Qualifier name="Variable Type">Independent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr15">
+            <Data format="string">-</Data>
+            <Qualifier name="Data link version">1</Qualifier>
+            <Qualifier name="Database key">Materials_Database</Qualifier>
+            <Qualifier name="History guid">de62a413-0b09-40db-af3a-076323414ace</Qualifier>
+            <Qualifier name="Version guid">f71a3cc4-44a4-45ce-b8f2-8256bbd6d0b2</Qualifier>
+            <Qualifier name="Model guid">00000000-0000-0000-0000-000000000000</Qualifier>
+            <Qualifier name="Model version">0</Qualifier>
+            <Qualifier name="Display">False</Qualifier>
           </PropertyData>
         </BulkDetails>
       </Material>
@@ -114,30 +277,30 @@
           <Description>Fatigue Data at zero mean stress comes from 1998 ASME BPV Code, Section 8, Div 2, Table 5-110.1</Description>
           <PropertyData property="pr0">
             <Data format="string">-</Data>
-            <ParameterValue parameter="pa0" format="float">
+            <ParameterValue parameter="pa1" format="float">
               <Data>132</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa1" format="float">
+            <ParameterValue parameter="pa2" format="float">
               <Data>139</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa2" format="float">
+            <ParameterValue parameter="pa4" format="float">
               <Data>179</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa3" format="string">
+            <ParameterValue parameter="pa5" format="string">
               <Data>Appearance</Data>
             </ParameterValue>
           </PropertyData>
           <PropertyData property="pr2">
             <Data format="string">-</Data>
-            <ParameterValue parameter="pa7" format="float">
+            <ParameterValue parameter="pa6" format="float">
               <Data>0</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
           </PropertyData>
-          <PropertyData property="pr3">
+          <PropertyData property="pr4">
             <Data format="string">-</Data>
             <ParameterValue parameter="pa8" format="float">
               <Data>250000000</Data>
@@ -147,17 +310,17 @@
           <PropertyData property="pr1">
             <Data format="string">-</Data>
             <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
-            <ParameterValue parameter="pa4" format="string">
+            <ParameterValue parameter="pa0" format="string">
               <Data>Interpolation Options</Data>
               <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
               <Qualifier name="Normalized">True</Qualifier>
               <Qualifier name="Cached">True</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa5" format="float">
+            <ParameterValue parameter="pa3" format="float">
               <Data>2700</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa6" format="float">
+            <ParameterValue parameter="pa9" format="float">
               <Data>7.88860905221012e-31</Data>
               <Qualifier name="Variable Type">Independent</Qualifier>
               <Qualifier name="Field Variable">Temperature</Qualifier>
@@ -167,7 +330,7 @@
               <Qualifier name="Lower Limit">Program Controlled</Qualifier>
             </ParameterValue>
           </PropertyData>
-          <PropertyData property="pr5">
+          <PropertyData property="pr6">
             <Data format="string">-</Data>
             <ParameterValue parameter="pa10" format="float">
               <Data>250000000</Data>
@@ -186,17 +349,17 @@
             <Qualifier name="Definition">Secant</Qualifier>
             <Qualifier name="Behavior">Isotropic</Qualifier>
             <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
-            <ParameterValue parameter="pa4" format="string">
+            <ParameterValue parameter="pa0" format="string">
               <Data>Interpolation Options</Data>
               <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
               <Qualifier name="Normalized">True</Qualifier>
               <Qualifier name="Cached">True</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa13" format="float">
+            <ParameterValue parameter="pa17" format="float">
               <Data>2e-06</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa6" format="float">
+            <ParameterValue parameter="pa9" format="float">
               <Data>7.88860905221012e-31</Data>
               <Qualifier name="Variable Type">Independent</Qualifier>
               <Qualifier name="Field Variable">Temperature</Qualifier>
@@ -210,30 +373,30 @@
             <Data format="string">-</Data>
             <Qualifier name="Definition">Secant</Qualifier>
             <Qualifier name="Behavior">Isotropic</Qualifier>
-            <ParameterValue parameter="pa14" format="float">
+            <ParameterValue parameter="pa18" format="float">
               <Data>22</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa3" format="string">
+            <ParameterValue parameter="pa5" format="string">
               <Data>Coefficient of Thermal Expansion</Data>
             </ParameterValue>
           </PropertyData>
-          <PropertyData property="pr4">
+          <PropertyData property="pr3">
             <Data format="string">-</Data>
             <Qualifier name="Definition">Constant Pressure</Qualifier>
             <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
             <Qualifier name="Symbol">Cᵨ</Qualifier>
-            <ParameterValue parameter="pa4" format="string">
+            <ParameterValue parameter="pa0" format="string">
               <Data>Interpolation Options</Data>
               <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
               <Qualifier name="Normalized">True</Qualifier>
               <Qualifier name="Cached">True</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa9" format="float">
+            <ParameterValue parameter="pa7" format="float">
               <Data>690,810,1160,1240,1251</Data>
               <Qualifier name="Variable Type">Dependent,Dependent,Dependent,Dependent,Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa6" format="float">
+            <ParameterValue parameter="pa9" format="float">
               <Data>20,100,500,800,1100</Data>
               <Qualifier name="Variable Type">Independent,Independent,Independent,Independent,Independent</Qualifier>
               <Qualifier name="Field Variable">Temperature</Qualifier>
@@ -243,19 +406,19 @@
               <Qualifier name="Lower Limit">Program Controlled</Qualifier>
             </ParameterValue>
           </PropertyData>
-          <PropertyData property="pr11">
+          <PropertyData property="pr14">
             <Data format="string">-</Data>
             <Qualifier name="Interpolation">Log-Log</Qualifier>
             <Qualifier name="Field Variable Compatible">Mean Stress</Qualifier>
-            <ParameterValue parameter="pa15" format="float">
+            <ParameterValue parameter="pa22" format="float">
               <Data>3999000000,2827000000,1896000000,1413000000,1069000000,441000000,262000000,214000000,138000000,114000000,86200000</Data>
               <Qualifier name="Variable Type">Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa16" format="float">
+            <ParameterValue parameter="pa23" format="float">
               <Data>10,20,50,100,200,2000,10000,20000,100000,200000,1000000</Data>
               <Qualifier name="Variable Type">Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa17" format="float">
+            <ParameterValue parameter="pa24" format="float">
               <Data>0,0,0,0,0,0,0,0,0,0,0</Data>
               <Qualifier name="Variable Type">Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent</Qualifier>
               <Qualifier name="Field Variable">Mean Stress</Qualifier>
@@ -265,30 +428,30 @@
               <Qualifier name="Lower Limit">Program Controlled</Qualifier>
             </ParameterValue>
           </PropertyData>
-          <PropertyData property="pr12">
+          <PropertyData property="pr16">
             <Data format="string">-</Data>
             <Qualifier name="Display Curve Type">Strain-Life</Qualifier>
-            <ParameterValue parameter="pa18" format="float">
+            <ParameterValue parameter="pa25" format="float">
               <Data>920000000</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa19" format="float">
+            <ParameterValue parameter="pa26" format="float">
               <Data>-0.106</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa20" format="float">
+            <ParameterValue parameter="pa27" format="float">
               <Data>0.213</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa21" format="float">
+            <ParameterValue parameter="pa28" format="float">
               <Data>-0.47</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa22" format="float">
+            <ParameterValue parameter="pa29" format="float">
               <Data>1000000000</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa23" format="float">
+            <ParameterValue parameter="pa30" format="float">
               <Data>0.2</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
@@ -296,43 +459,43 @@
           <PropertyData property="pr13">
             <Data format="string">-</Data>
             <Qualifier name="Behavior">Isotropic</Qualifier>
-            <ParameterValue parameter="pa24" format="float">
+            <ParameterValue parameter="pa21" format="float">
               <Data>1.7e-07</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa6" format="float">
+            <ParameterValue parameter="pa9" format="float">
               <Data>7.88860905221012e-31</Data>
               <Qualifier name="Variable Type">Independent</Qualifier>
             </ParameterValue>
           </PropertyData>
-          <PropertyData property="pr14">
+          <PropertyData property="pr5">
             <Data format="string">-</Data>
             <Qualifier name="Behavior">Isotropic</Qualifier>
             <Qualifier name="Derive from">Young's Modulus and Poisson's Ratio</Qualifier>
             <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
-            <ParameterValue parameter="pa4" format="string">
+            <ParameterValue parameter="pa0" format="string">
               <Data>Interpolation Options</Data>
               <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
               <Qualifier name="Normalized">True</Qualifier>
               <Qualifier name="Cached">True</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa25" format="float">
+            <ParameterValue parameter="pa11" format="float">
               <Data>120000000000</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa26" format="float">
+            <ParameterValue parameter="pa13" format="float">
               <Data>0.2</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa27" format="float">
+            <ParameterValue parameter="pa14" format="float">
               <Data>66666666666.6667</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa28" format="float">
+            <ParameterValue parameter="pa15" format="float">
               <Data>50000000000</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa6" format="float">
+            <ParameterValue parameter="pa9" format="float">
               <Data>7.88860905221012e-31</Data>
               <Qualifier name="Variable Type">Independent</Qualifier>
               <Qualifier name="Field Variable">Temperature</Qualifier>
@@ -342,29 +505,29 @@
               <Qualifier name="Lower Limit">Program Controlled</Qualifier>
             </ParameterValue>
           </PropertyData>
-          <PropertyData property="pr15">
+          <PropertyData property="pr20">
             <Data format="string">-</Data>
             <Qualifier name="Behavior">Isotropic</Qualifier>
-            <ParameterValue parameter="pa29" format="float">
+            <ParameterValue parameter="pa34" format="float">
               <Data>10000</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
             </ParameterValue>
           </PropertyData>
-          <PropertyData property="pr6">
+          <PropertyData property="pr8">
             <Data format="string">-</Data>
             <Qualifier name="Behavior">Isotropic</Qualifier>
             <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
-            <ParameterValue parameter="pa4" format="string">
+            <ParameterValue parameter="pa0" format="string">
               <Data>Interpolation Options</Data>
               <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
               <Qualifier name="Normalized">True</Qualifier>
               <Qualifier name="Cached">True</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa11" format="float">
+            <ParameterValue parameter="pa16" format="float">
               <Data>20.8,19,13.8,11,9.1</Data>
               <Qualifier name="Variable Type">Dependent,Dependent,Dependent,Dependent,Dependent</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa6" format="float">
+            <ParameterValue parameter="pa9" format="float">
               <Data>20,100,500,800,1100</Data>
               <Qualifier name="Variable Type">Independent,Independent,Independent,Independent,Independent</Qualifier>
               <Qualifier name="Field Variable">Temperature</Qualifier>
@@ -376,28 +539,437 @@
           </PropertyData>
         </BulkDetails>
       </Material>
+      <Material>
+        <BulkDetails>
+          <Name>Structural Steel</Name>
+          <Description>Fatigue Data at zero mean stress comes from 1998 ASME BPV Code, Section 8, Div 2, Table 5-110.1</Description>
+          <PropertyData property="pr0">
+            <Data format="string">-</Data>
+            <ParameterValue parameter="pa1" format="float">
+              <Data>132</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa2" format="float">
+              <Data>139</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa4" format="float">
+              <Data>179</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa5" format="string">
+              <Data>Appearance</Data>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr2">
+            <Data format="string">-</Data>
+            <ParameterValue parameter="pa6" format="float">
+              <Data>0</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr4">
+            <Data format="string">-</Data>
+            <ParameterValue parameter="pa8" format="float">
+              <Data>250000000</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr1">
+            <Data format="string">-</Data>
+            <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
+            <ParameterValue parameter="pa0" format="string">
+              <Data>Interpolation Options</Data>
+              <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
+              <Qualifier name="Normalized">True</Qualifier>
+              <Qualifier name="Cached">True</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa3" format="float">
+              <Data>7850</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa9" format="float">
+              <Data>7.88860905221012e-31</Data>
+              <Qualifier name="Variable Type">Independent</Qualifier>
+              <Qualifier name="Field Variable">Temperature</Qualifier>
+              <Qualifier name="Default Data">22</Qualifier>
+              <Qualifier name="Field Units">C</Qualifier>
+              <Qualifier name="Upper Limit">Program Controlled</Qualifier>
+              <Qualifier name="Lower Limit">Program Controlled</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr6">
+            <Data format="string">-</Data>
+            <ParameterValue parameter="pa10" format="float">
+              <Data>250000000</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr7">
+            <Data format="string">-</Data>
+            <ParameterValue parameter="pa12" format="float">
+              <Data>460000000</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr9">
+            <Data format="string">-</Data>
+            <Qualifier name="Definition">Secant</Qualifier>
+            <Qualifier name="Behavior">Isotropic</Qualifier>
+            <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
+            <ParameterValue parameter="pa0" format="string">
+              <Data>Interpolation Options</Data>
+              <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
+              <Qualifier name="Normalized">True</Qualifier>
+              <Qualifier name="Cached">True</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa17" format="float">
+              <Data>1.2e-05</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa9" format="float">
+              <Data>7.88860905221012e-31</Data>
+              <Qualifier name="Variable Type">Independent</Qualifier>
+              <Qualifier name="Field Variable">Temperature</Qualifier>
+              <Qualifier name="Default Data">22</Qualifier>
+              <Qualifier name="Field Units">C</Qualifier>
+              <Qualifier name="Upper Limit">Program Controlled</Qualifier>
+              <Qualifier name="Lower Limit">Program Controlled</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr10">
+            <Data format="string">-</Data>
+            <Qualifier name="Definition">Secant</Qualifier>
+            <Qualifier name="Behavior">Isotropic</Qualifier>
+            <ParameterValue parameter="pa18" format="float">
+              <Data>22</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa5" format="string">
+              <Data>Coefficient of Thermal Expansion</Data>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr3">
+            <Data format="string">-</Data>
+            <Qualifier name="Definition">Constant Pressure</Qualifier>
+            <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
+            <Qualifier name="Symbol">Cᵨ</Qualifier>
+            <ParameterValue parameter="pa0" format="string">
+              <Data>Interpolation Options</Data>
+              <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
+              <Qualifier name="Normalized">True</Qualifier>
+              <Qualifier name="Cached">True</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa7" format="float">
+              <Data>434</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa9" format="float">
+              <Data>7.88860905221012e-31</Data>
+              <Qualifier name="Variable Type">Independent</Qualifier>
+              <Qualifier name="Field Variable">Temperature</Qualifier>
+              <Qualifier name="Default Data">22</Qualifier>
+              <Qualifier name="Field Units">C</Qualifier>
+              <Qualifier name="Upper Limit">Program Controlled</Qualifier>
+              <Qualifier name="Lower Limit">Program Controlled</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr8">
+            <Data format="string">-</Data>
+            <Qualifier name="Behavior">Isotropic</Qualifier>
+            <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
+            <ParameterValue parameter="pa0" format="string">
+              <Data>Interpolation Options</Data>
+              <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
+              <Qualifier name="Normalized">True</Qualifier>
+              <Qualifier name="Cached">True</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa16" format="float">
+              <Data>60.5</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa9" format="float">
+              <Data>21</Data>
+              <Qualifier name="Variable Type">Independent</Qualifier>
+              <Qualifier name="Field Variable">Temperature</Qualifier>
+              <Qualifier name="Default Data">22</Qualifier>
+              <Qualifier name="Field Units">C</Qualifier>
+              <Qualifier name="Upper Limit">Program Controlled</Qualifier>
+              <Qualifier name="Lower Limit">Program Controlled</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr14">
+            <Data format="string">-</Data>
+            <Qualifier name="Interpolation">Log-Log</Qualifier>
+            <Qualifier name="Field Variable Compatible">Mean Stress</Qualifier>
+            <ParameterValue parameter="pa22" format="float">
+              <Data>3999000000,2827000000,1896000000,1413000000,1069000000,441000000,262000000,214000000,138000000,114000000,86200000</Data>
+              <Qualifier name="Variable Type">Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent,Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa23" format="float">
+              <Data>10,20,50,100,200,2000,10000,20000,100000,200000,1000000</Data>
+              <Qualifier name="Variable Type">Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa24" format="float">
+              <Data>0,0,0,0,0,0,0,0,0,0,0</Data>
+              <Qualifier name="Variable Type">Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent,Independent</Qualifier>
+              <Qualifier name="Field Variable">Mean Stress</Qualifier>
+              <Qualifier name="Default Data">0</Qualifier>
+              <Qualifier name="Field Units">Pa</Qualifier>
+              <Qualifier name="Upper Limit">Program Controlled</Qualifier>
+              <Qualifier name="Lower Limit">Program Controlled</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr16">
+            <Data format="string">-</Data>
+            <Qualifier name="Display Curve Type">Strain-Life</Qualifier>
+            <ParameterValue parameter="pa25" format="float">
+              <Data>920000000</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa26" format="float">
+              <Data>-0.106</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa27" format="float">
+              <Data>0.213</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa28" format="float">
+              <Data>-0.47</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa29" format="float">
+              <Data>1000000000</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa30" format="float">
+              <Data>0.2</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr13">
+            <Data format="string">-</Data>
+            <Qualifier name="Behavior">Isotropic</Qualifier>
+            <ParameterValue parameter="pa21" format="float">
+              <Data>1.7e-07</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa9" format="float">
+              <Data>7.88860905221012e-31</Data>
+              <Qualifier name="Variable Type">Independent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr5">
+            <Data format="string">-</Data>
+            <Qualifier name="Behavior">Isotropic</Qualifier>
+            <Qualifier name="Derive from">Young's Modulus and Poisson's Ratio</Qualifier>
+            <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
+            <ParameterValue parameter="pa0" format="string">
+              <Data>Interpolation Options</Data>
+              <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
+              <Qualifier name="Normalized">True</Qualifier>
+              <Qualifier name="Cached">True</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa11" format="float">
+              <Data>200000000000</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa13" format="float">
+              <Data>0.3</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa14" format="float">
+              <Data>166666666666.667</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa15" format="float">
+              <Data>76923076923.0769</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa9" format="float">
+              <Data>7.88860905221012e-31</Data>
+              <Qualifier name="Variable Type">Independent</Qualifier>
+              <Qualifier name="Field Variable">Temperature</Qualifier>
+              <Qualifier name="Default Data">22</Qualifier>
+              <Qualifier name="Field Units">C</Qualifier>
+              <Qualifier name="Upper Limit">Program Controlled</Qualifier>
+              <Qualifier name="Lower Limit">Program Controlled</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr20">
+            <Data format="string">-</Data>
+            <Qualifier name="Behavior">Isotropic</Qualifier>
+            <ParameterValue parameter="pa34" format="float">
+              <Data>10000</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+        </BulkDetails>
+      </Material>
+      <Material>
+        <BulkDetails>
+          <Name>Sulfur Vapor</Name>
+          <PropertyData property="pr1">
+            <Data format="string">-</Data>
+            <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
+            <ParameterValue parameter="pa0" format="string">
+              <Data>Interpolation Options</Data>
+              <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
+              <Qualifier name="Normalized">True</Qualifier>
+              <Qualifier name="Cached">True</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa3" format="float">
+              <Data>2.71</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr3">
+            <Data format="string">-</Data>
+            <Qualifier name="Definition">Constant Pressure</Qualifier>
+            <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
+            <Qualifier name="Symbol">Cᵨ</Qualifier>
+            <ParameterValue parameter="pa0" format="string">
+              <Data>Interpolation Options</Data>
+              <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
+              <Qualifier name="Normalized">True</Qualifier>
+              <Qualifier name="Cached">True</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa7" format="float">
+              <Data>537</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr8">
+            <Data format="string">-</Data>
+            <Qualifier name="Behavior">Isotropic</Qualifier>
+            <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
+            <ParameterValue parameter="pa0" format="string">
+              <Data>Interpolation Options</Data>
+              <Qualifier name="AlgorithmType">Linear Multivariate</Qualifier>
+              <Qualifier name="Normalized">True</Qualifier>
+              <Qualifier name="Cached">True</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa16" format="float">
+              <Data>0.0104</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa9" format="float">
+              <Data>7.88860905221012e-31</Data>
+              <Qualifier name="Variable Type">Independent</Qualifier>
+              <Qualifier name="Field Variable">Temperature</Qualifier>
+              <Qualifier name="Default Data">22</Qualifier>
+              <Qualifier name="Field Units">C</Qualifier>
+              <Qualifier name="Upper Limit">Program Controlled</Qualifier>
+              <Qualifier name="Lower Limit">Program Controlled</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr11">
+            <Data format="string">-</Data>
+            <Qualifier name="BETA">Mechanical.ModalAcoustics</Qualifier>
+            <Qualifier name="Field Variable Compatible">Temperature</Qualifier>
+            <ParameterValue parameter="pa19" format="float">
+              <Data>1.2e-05</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr12">
+            <Data format="string">-</Data>
+            <ParameterValue parameter="pa20" format="float">
+              <Data>64.128</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr17">
+            <Data format="string">-</Data>
+            <ParameterValue parameter="pa31" format="float">
+              <Data>128489312</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr18">
+            <Data format="string">-</Data>
+            <ParameterValue parameter="pa32" format="float">
+              <Data>24.85</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr19">
+            <Data format="string">-</Data>
+            <ParameterValue parameter="pa33" format="float">
+              <Data>228064.2</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr21">
+            <Data format="string">-</Data>
+            <ParameterValue parameter="pa35" format="float">
+              <Data>9664000</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr22">
+            <Data format="string">-</Data>
+            <ParameterValue parameter="pa36" format="float">
+              <Data>979.75</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr23">
+            <Data format="string">-</Data>
+            <ParameterValue parameter="pa37" format="float">
+              <Data>0.132</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr24">
+            <Data format="string">-</Data>
+            <ParameterValue parameter="pa38" format="float">
+              <Data>0.002089</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr26">
+            <Data format="string">-</Data>
+            <ParameterValue parameter="pa39" format="float">
+              <Data>0</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+          </PropertyData>
+          <PropertyData property="pr0">
+            <Data format="string">-</Data>
+            <ParameterValue parameter="pa1" format="float">
+              <Data>103</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa2" format="float">
+              <Data>192</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa4" format="float">
+              <Data>205</Data>
+              <Qualifier name="Variable Type">Dependent</Qualifier>
+            </ParameterValue>
+            <ParameterValue parameter="pa5" format="string">
+              <Data>Appearance</Data>
+            </ParameterValue>
+          </PropertyData>
+        </BulkDetails>
+      </Material>
       <Metadata>
-        <ParameterDetails id="pa0">
+        <ParameterDetails id="pa1">
           <Name>Red</Name>
           <Unitless />
         </ParameterDetails>
-        <ParameterDetails id="pa1">
-          <Name>Green</Name>
-          <Unitless />
-        </ParameterDetails>
-        <ParameterDetails id="pa2">
-          <Name>Blue</Name>
-          <Unitless />
+        <ParameterDetails id="pa9">
+          <Name>Temperature</Name>
+          <Units name="Temperature">
+            <Unit>
+              <Name>C</Name>
+            </Unit>
+          </Units>
         </ParameterDetails>
         <ParameterDetails id="pa3">
-          <Name>Material Property</Name>
-          <Unitless />
-        </ParameterDetails>
-        <ParameterDetails id="pa4">
-          <Name>Options Variable</Name>
-          <Unitless />
-        </ParameterDetails>
-        <ParameterDetails id="pa5">
           <Name>Density</Name>
           <Units name="Density">
             <Unit>
@@ -408,52 +980,55 @@
             </Unit>
           </Units>
         </ParameterDetails>
-        <ParameterDetails id="pa6">
-          <Name>Temperature</Name>
-          <Units name="Temperature">
-            <Unit>
-              <Name>C</Name>
-            </Unit>
-          </Units>
-        </ParameterDetails>
-        <ParameterDetails id="pa9">
-          <Name>Specific Heat</Name>
-          <Units name="Specific Heat Capacity">
-            <Unit>
-              <Name>J</Name>
-            </Unit>
-            <Unit power="-1">
-              <Name>kg</Name>
-            </Unit>
-            <Unit power="-1">
-              <Name>C</Name>
-            </Unit>
-          </Units>
-        </ParameterDetails>
         <ParameterDetails id="pa11">
-          <Name>Thermal Conductivity</Name>
-          <Units name="Thermal Conductivity">
-            <Unit>
-              <Name>W</Name>
-            </Unit>
-            <Unit power="-1">
-              <Name>m</Name>
-            </Unit>
-            <Unit power="-1">
-              <Name>C</Name>
-            </Unit>
-          </Units>
-        </ParameterDetails>
-        <ParameterDetails id="pa7">
-          <Name>Compressive Ultimate Strength</Name>
+          <Name>Young's Modulus</Name>
           <Units name="Stress">
             <Unit>
               <Name>Pa</Name>
             </Unit>
           </Units>
         </ParameterDetails>
-        <ParameterDetails id="pa8">
-          <Name>Compressive Yield Strength</Name>
+        <ParameterDetails id="pa13">
+          <Name>Poisson's Ratio</Name>
+          <Unitless />
+        </ParameterDetails>
+        <ParameterDetails id="pa14">
+          <Name>Bulk Modulus</Name>
+          <Units name="Stress">
+            <Unit>
+              <Name>Pa</Name>
+            </Unit>
+          </Units>
+        </ParameterDetails>
+        <ParameterDetails id="pa15">
+          <Name>Shear Modulus</Name>
+          <Units name="Stress">
+            <Unit>
+              <Name>Pa</Name>
+            </Unit>
+          </Units>
+        </ParameterDetails>
+        <ParameterDetails id="pa21">
+          <Name>Resistivity</Name>
+          <Units name="Electrical Resistivity">
+            <Unit>
+              <Name>ohm</Name>
+            </Unit>
+            <Unit>
+              <Name>m</Name>
+            </Unit>
+          </Units>
+        </ParameterDetails>
+        <ParameterDetails id="pa4">
+          <Name>Blue</Name>
+          <Unitless />
+        </ParameterDetails>
+        <ParameterDetails id="pa5">
+          <Name>Material Property</Name>
+          <Unitless />
+        </ParameterDetails>
+        <ParameterDetails id="pa6">
+          <Name>Compressive Ultimate Strength</Name>
           <Units name="Stress">
             <Unit>
               <Name>Pa</Name>
@@ -476,15 +1051,7 @@
             </Unit>
           </Units>
         </ParameterDetails>
-        <ParameterDetails id="pa13">
-          <Name>Coefficient of Thermal Expansion</Name>
-          <Units name="InvTemp1">
-            <Unit power="-1">
-              <Name>C</Name>
-            </Unit>
-          </Units>
-        </ParameterDetails>
-        <ParameterDetails id="pa14">
+        <ParameterDetails id="pa18">
           <Name>Zero-Thermal-Strain Reference Temperature</Name>
           <Units name="Temperature">
             <Unit>
@@ -492,7 +1059,7 @@
             </Unit>
           </Units>
         </ParameterDetails>
-        <ParameterDetails id="pa15">
+        <ParameterDetails id="pa22">
           <Name>Alternating Stress</Name>
           <Units name="Stress">
             <Unit>
@@ -500,11 +1067,11 @@
             </Unit>
           </Units>
         </ParameterDetails>
-        <ParameterDetails id="pa16">
+        <ParameterDetails id="pa23">
           <Name>Cycles</Name>
           <Unitless />
         </ParameterDetails>
-        <ParameterDetails id="pa17">
+        <ParameterDetails id="pa24">
           <Name>Mean Stress</Name>
           <Units name="Stress">
             <Unit>
@@ -512,7 +1079,7 @@
             </Unit>
           </Units>
         </ParameterDetails>
-        <ParameterDetails id="pa18">
+        <ParameterDetails id="pa25">
           <Name>Strength Coefficient</Name>
           <Units name="Stress">
             <Unit>
@@ -520,19 +1087,19 @@
             </Unit>
           </Units>
         </ParameterDetails>
-        <ParameterDetails id="pa19">
+        <ParameterDetails id="pa26">
           <Name>Strength Exponent</Name>
           <Unitless />
         </ParameterDetails>
-        <ParameterDetails id="pa20">
+        <ParameterDetails id="pa27">
           <Name>Ductility Coefficient</Name>
           <Unitless />
         </ParameterDetails>
-        <ParameterDetails id="pa21">
+        <ParameterDetails id="pa28">
           <Name>Ductility Exponent</Name>
           <Unitless />
         </ParameterDetails>
-        <ParameterDetails id="pa22">
+        <ParameterDetails id="pa29">
           <Name>Cyclic Strength Coefficient</Name>
           <Units name="Stress">
             <Unit>
@@ -540,52 +1107,156 @@
             </Unit>
           </Units>
         </ParameterDetails>
-        <ParameterDetails id="pa23">
+        <ParameterDetails id="pa30">
           <Name>Cyclic Strain Hardening Exponent</Name>
           <Unitless />
         </ParameterDetails>
-        <ParameterDetails id="pa24">
-          <Name>Resistivity</Name>
-          <Units name="Electrical Resistivity">
+        <ParameterDetails id="pa34">
+          <Name>Relative Permeability</Name>
+          <Unitless />
+        </ParameterDetails>
+        <ParameterDetails id="pa2">
+          <Name>Green</Name>
+          <Unitless />
+        </ParameterDetails>
+        <ParameterDetails id="pa8">
+          <Name>Compressive Yield Strength</Name>
+          <Units name="Stress">
             <Unit>
-              <Name>ohm</Name>
+              <Name>Pa</Name>
+            </Unit>
+          </Units>
+        </ParameterDetails>
+        <ParameterDetails id="pa17">
+          <Name>Coefficient of Thermal Expansion</Name>
+          <Units name="InvTemp1">
+            <Unit power="-1">
+              <Name>C</Name>
+            </Unit>
+          </Units>
+        </ParameterDetails>
+        <ParameterDetails id="pa0">
+          <Name>Options Variable</Name>
+          <Unitless />
+        </ParameterDetails>
+        <ParameterDetails id="pa7">
+          <Name>Specific Heat</Name>
+          <Units name="Specific Heat Capacity">
+            <Unit>
+              <Name>J</Name>
+            </Unit>
+            <Unit power="-1">
+              <Name>kg</Name>
+            </Unit>
+            <Unit power="-1">
+              <Name>C</Name>
+            </Unit>
+          </Units>
+        </ParameterDetails>
+        <ParameterDetails id="pa16">
+          <Name>Thermal Conductivity</Name>
+          <Units name="Thermal Conductivity">
+            <Unit>
+              <Name>W</Name>
+            </Unit>
+            <Unit power="-1">
+              <Name>m</Name>
+            </Unit>
+            <Unit power="-1">
+              <Name>C</Name>
+            </Unit>
+          </Units>
+        </ParameterDetails>
+        <ParameterDetails id="pa19">
+          <Name>Viscosity</Name>
+          <Units name="Dynamic Viscosity">
+            <Unit>
+              <Name>Pa</Name>
             </Unit>
             <Unit>
+              <Name>s</Name>
+            </Unit>
+          </Units>
+        </ParameterDetails>
+        <ParameterDetails id="pa20">
+          <Name>Molecular Weight</Name>
+          <Units name="Molar Mass">
+            <Unit>
+              <Name>kg</Name>
+            </Unit>
+            <Unit power="-1">
+              <Name>kmol</Name>
+            </Unit>
+          </Units>
+        </ParameterDetails>
+        <ParameterDetails id="pa31">
+          <Name>Formation Enthalpy</Name>
+          <Units name="Molar Energy">
+            <Unit>
+              <Name>J</Name>
+            </Unit>
+            <Unit power="-1">
+              <Name>mol</Name>
+            </Unit>
+          </Units>
+        </ParameterDetails>
+        <ParameterDetails id="pa32">
+          <Name>Reference Temperature</Name>
+          <Units name="Temperature">
+            <Unit>
+              <Name>C</Name>
+            </Unit>
+          </Units>
+        </ParameterDetails>
+        <ParameterDetails id="pa33">
+          <Name>Formation Entropy</Name>
+          <Units name="Thermal Capacitance">
+            <Unit>
+              <Name>J</Name>
+            </Unit>
+            <Unit power="-1">
+              <Name>C</Name>
+            </Unit>
+          </Units>
+        </ParameterDetails>
+        <ParameterDetails id="pa35">
+          <Name>Critical Pressure</Name>
+          <Units name="MAPDL Enthalpy">
+            <Unit>
+              <Name>J</Name>
+            </Unit>
+            <Unit power="-3">
               <Name>m</Name>
             </Unit>
           </Units>
         </ParameterDetails>
-        <ParameterDetails id="pa25">
-          <Name>Young's Modulus</Name>
-          <Units name="Stress">
+        <ParameterDetails id="pa36">
+          <Name>Critical Temperature</Name>
+          <Units name="Temperature">
             <Unit>
-              <Name>Pa</Name>
+              <Name>C</Name>
             </Unit>
           </Units>
         </ParameterDetails>
-        <ParameterDetails id="pa26">
-          <Name>Poisson's Ratio</Name>
+        <ParameterDetails id="pa37">
+          <Name>Acentric Factor</Name>
           <Unitless />
         </ParameterDetails>
-        <ParameterDetails id="pa27">
-          <Name>Bulk Modulus</Name>
-          <Units name="Stress">
-            <Unit>
-              <Name>Pa</Name>
+        <ParameterDetails id="pa38">
+          <Name>Critical Volume</Name>
+          <Units name="Section Modulus">
+            <Unit power="3">
+              <Name>m</Name>
             </Unit>
           </Units>
         </ParameterDetails>
-        <ParameterDetails id="pa28">
-          <Name>Shear Modulus</Name>
-          <Units name="Stress">
-            <Unit>
-              <Name>Pa</Name>
+        <ParameterDetails id="pa39">
+          <Name>Absorption Coefficient</Name>
+          <Units name="Inverse Length">
+            <Unit power="-1">
+              <Name>m</Name>
             </Unit>
           </Units>
-        </ParameterDetails>
-        <ParameterDetails id="pa29">
-          <Name>Relative Permeability</Name>
-          <Unitless />
         </ParameterDetails>
         <PropertyDetails id="pr0">
           <Unitless />
@@ -601,19 +1272,19 @@
         </PropertyDetails>
         <PropertyDetails id="pr3">
           <Unitless />
-          <Name>Compressive Yield Strength</Name>
+          <Name>Specific Heat</Name>
         </PropertyDetails>
         <PropertyDetails id="pr4">
           <Unitless />
-          <Name>Specific Heat</Name>
+          <Name>Compressive Yield Strength</Name>
         </PropertyDetails>
         <PropertyDetails id="pr5">
           <Unitless />
-          <Name>Tensile Yield Strength</Name>
+          <Name>Elasticity</Name>
         </PropertyDetails>
         <PropertyDetails id="pr6">
           <Unitless />
-          <Name>Thermal Conductivity</Name>
+          <Name>Tensile Yield Strength</Name>
         </PropertyDetails>
         <PropertyDetails id="pr7">
           <Unitless />
@@ -621,7 +1292,7 @@
         </PropertyDetails>
         <PropertyDetails id="pr8">
           <Unitless />
-          <Name>Field Variable</Name>
+          <Name>Thermal Conductivity</Name>
         </PropertyDetails>
         <PropertyDetails id="pr9">
           <Unitless />
@@ -633,11 +1304,11 @@
         </PropertyDetails>
         <PropertyDetails id="pr11">
           <Unitless />
-          <Name>S-N Curve</Name>
+          <Name>Viscosity</Name>
         </PropertyDetails>
         <PropertyDetails id="pr12">
           <Unitless />
-          <Name>Strain-Life Parameters</Name>
+          <Name>Molecular Weight</Name>
         </PropertyDetails>
         <PropertyDetails id="pr13">
           <Unitless />
@@ -645,11 +1316,55 @@
         </PropertyDetails>
         <PropertyDetails id="pr14">
           <Unitless />
-          <Name>Elasticity</Name>
+          <Name>S-N Curve</Name>
         </PropertyDetails>
         <PropertyDetails id="pr15">
           <Unitless />
+          <Name>Granta material details</Name>
+        </PropertyDetails>
+        <PropertyDetails id="pr16">
+          <Unitless />
+          <Name>Strain-Life Parameters</Name>
+        </PropertyDetails>
+        <PropertyDetails id="pr17">
+          <Unitless />
+          <Name>Formation Enthalpy</Name>
+        </PropertyDetails>
+        <PropertyDetails id="pr18">
+          <Unitless />
+          <Name>Reference Temperature</Name>
+        </PropertyDetails>
+        <PropertyDetails id="pr19">
+          <Unitless />
+          <Name>Formation Entropy</Name>
+        </PropertyDetails>
+        <PropertyDetails id="pr20">
+          <Unitless />
           <Name>Relative Permeability</Name>
+        </PropertyDetails>
+        <PropertyDetails id="pr21">
+          <Unitless />
+          <Name>Critical Pressure</Name>
+        </PropertyDetails>
+        <PropertyDetails id="pr22">
+          <Unitless />
+          <Name>Critical Temperature</Name>
+        </PropertyDetails>
+        <PropertyDetails id="pr23">
+          <Unitless />
+          <Name>Acentric Factor</Name>
+        </PropertyDetails>
+        <PropertyDetails id="pr24">
+          <Unitless />
+          <Name>Critical Volume</Name>
+        </PropertyDetails>
+        <PropertyDetails id="pr25">
+          <Unitless />
+          <Name>Field Variable</Name>
+        </PropertyDetails>
+        <PropertyDetails id="pr26">
+          <Unitless />
+          <Name>Absorption Coefficient</Name>
         </PropertyDetails>
       </Metadata>
     </MatML_Doc>

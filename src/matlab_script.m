@@ -6,4 +6,4 @@ jl.call('pwd')
 %jleval import Pkg
 jl.include(".//src//EngineeringDataManager.jl") 
 
-%[names,nodes] = jl.call('EngineeringDataManager.material_nodes');
+names = jl.call('EngineeringDataManager.material_nodes');

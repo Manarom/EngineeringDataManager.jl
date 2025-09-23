@@ -1,8 +1,8 @@
 module EngineeringDataManager
-    using XML,Sockets,OrderedCollections #,StructTypes,Observables,
-    using XMLWalker
+    using XML,Sockets, OrderedCollections #,StructTypes,Observables,
+    using XMLWalker, Polynomials
     const SymbolOrNothing = Union{Symbol,Nothing}
-    const ENG_DATA_FILE = Ref(joinpath(@__DIR__, "EngineeringData.xml"))
+    const ENG_DATA_FILE = Ref(joinpath(@__DIR__, "EngineeringData.xml")) # default file name
     const XML_DOC =  begin 
                             out = Ref{Node}()
                             try    
@@ -28,6 +28,7 @@ module EngineeringDataManager
             XML_DOC[] =  XML.read(file_fullname,Node)
             fill_materials_nodes()
             fill_ids()
+            ENG_DATA_FILE[] = file_fullname
             return true
         catch Exc
             @show Exc
@@ -97,8 +98,7 @@ function fill_materials_nodes()
     all_parameters_ids() = filter(k->contains(k,"pa") , all_ids())
     all_properties_ids() = filter(k->contains(k,"pr") , all_ids())
     all_properties_names() = [IDS[][p] for p in all_properties_ids()]
-
-    
+    all_materials_names() = all_materials() |> collect
     """
     fill_ids()
 
@@ -309,7 +309,13 @@ function get_all_qualifiers(w_node::Union{ParameterValueNode,PropertyDataNode})
         end
     end
     strstr(s::AbstractString) = ( string ∘ strip)(s)
+    function get_data(;property_name::AbstractString,material_name::AbstractString, format::AbstractString)
+        if format == "Polynomial"
 
+        else
+            
+        end
+    end
     function get_property_data(;property_name,material_name)
         prop_node = get_property_node(property_name , material_name)[]
         wrapped_prop_node = PropertyDataNode(prop_node)
@@ -329,9 +335,14 @@ function get_all_qualifiers(w_node::Union{ParameterValueNode,PropertyDataNode})
     end
     function get_optional_variable(pdc::PropertyDataContent)
         for p_i in pdc.parameters
-            !is_independent_variable(p_i) || return (p_i.name, p_i.data)
+            !is_optional_variable(p_i) || return (p_i.name, p_i.qualifiers)
         end
         return nothing
+    end
+    function tabular_data(pdc::PropertyDataContent)
+        (x_name,x_data) = get_independent_parameter_data(pdc)
+        (y_name,y_data) = get_dependent_parameter_data(pdc)
+        return (x = x_data, y = y_data, xname = x_name,yname=y_name )
     end
     is_dependent_variable(par::ParameterValueContent) = haskey(par.qualifiers,"Variable Type") && all(s-> strstr(s) == "Dependent"   ,eachsplit(par.qualifiers["Variable Type"],","))
     is_independent_variable(par::ParameterValueContent) = haskey(par.qualifiers,"Variable Type") && all(s-> strstr(s) == "Independent"   ,eachsplit(par.qualifiers["Variable Type"],","))

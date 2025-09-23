@@ -1,7 +1,7 @@
 # simple module to study the TCP communication
 # after running this script is starts the servet at localhost (by default - on DEFAULT_PORT) 
 module TCPcommunication
-    const DEFAULT_PORT=2000
+    const DEFAULT_PORT = 2000
     export start_server,tcp_server,try_write,try_readline,DEFAULT_PORT
     using Sockets
     const ForN   = Union{Function,Nothing} # function or nothing type for server starting function call
@@ -37,11 +37,12 @@ module TCPcommunication
         room_lock=ReentrantLock()
     end
     function tcp_server(connection::tcp_connection)
-        @info "Server started listening" connection.port.ip connection.port.port
+        
         serv = tcp_server(connection=connection,
                             server=listen(connection.port.ip,connection.port.port)
         )
         serv.task=errormonitor(@async accept_client_loop(serv))
+        @info "Server started listening" connection.port.ip connection.port.port
         return serv
     end
     """
@@ -184,7 +185,7 @@ EXAMPLE from HTTP package Servers module
             return false
         end
     
-        return nothing
+        return true
     end
 end
 
