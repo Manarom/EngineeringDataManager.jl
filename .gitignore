@@ -1,4 +1,4 @@
 /Manifest*.toml
 .vscode
-/debug*
+/src/debug*
 /src/cat*

@@ -188,18 +188,28 @@ EXAMPLE from HTTP package Servers module
     
         return true
     end
-    function read_with_timeout(io::IO, timeout::Float64)
+    """
+    read_with_timeout(io::IO, timeout)
+
+This function may be useful when one needs a response from the client to prevent
+"""
+function read_with_timeout(io::IO, timeout)
         channel = Channel{Union{String, Nothing}}(1)
-        task = @async put!(channel, try readline(io) catch; nothing end)
+        task =  @async put!(channel, try 
+                                        readline(io) 
+                                     catch; 
+                                        nothing 
+                                    end)
         timer = @async begin
             sleep(timeout)
             put!(channel, nothing)
         end
-        result = take!(channel)
+        result = take!(channel) # if nothing than there is an error in readline or timeout
         if result === nothing
             throw(TimeoutException("Readline timed out after $timeout seconds"))
             Base.throwto(task, InterruptException())
         else
+            Base.throwto(timer, InterruptException())
             return result
         end
     end

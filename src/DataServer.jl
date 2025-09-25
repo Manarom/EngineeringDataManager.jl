@@ -1,9 +1,7 @@
-
-
-module EngineeringDataServer
+module DataServer
     include("TCPcommunication.jl")
-    using .TCPcommunication
-    using ..EngineeringDataManager
+    using .TCPcommunication # export start_server,tcp_server,try_write,try_readline,DEFAULT_PORT,read_with_timeout
+    using ..DataManager
     using JSON3,Observables,Sockets
     # JSON3 package allows to read to the struct, this struct is to check this
     export start_server
@@ -20,9 +18,9 @@ module EngineeringDataServer
     function stop_server(serv::tcp_server,::TCPSocket)
         serv.shut_down_server=true
     end
-    function request_property_data(serv::tcp_server,socket::TCPSocket)
+    function request_property_data(::tcp_server,socket::TCPSocket)
         try 
-            str_out = JSON3.read(readline(socket))
+            str_out = JSON3.read(read_with_timeout(socket,30.0))     #readline(socket))
             JSON3.pretty(stdout,str_out)
             if !is_correct_property_request(str_out) 
                 @info "Incorrect input json format"
@@ -31,14 +29,13 @@ module EngineeringDataServer
             material_name = getproperty(str_out ,:material)
             property_name = getproperty(str_out ,:property)
             data_format = getproperty(str_out ,:format)
-            data_table = EngineeringDataManager.get_data(property_name = property_name,
+            data_table = DataManager.get_data(property_name = property_name,
                                                         material_name = material_name,
                                                         format = data_format)
             json_string = JSON3.write(data_table)       
             return try_write(socket,json_string) 
         catch err1
             @show err1
-            println("Incorrect json")
             json_string = JSON3.write(err1) 
             return try_write(socket,json_string) 
         end
@@ -56,9 +53,10 @@ module EngineeringDataServer
                                             hasproperty(json_obj,:material) && 
                                             hasproperty(json_obj,:format)
     #StructTypes.StructType(::Type{InstrumentState}) = StructTypes.Mutable()
-    const D = Dict("request_port_names"=>request_port_names,
-                    "stop_server"=>stop_server,
-                    "request_property_data"=>request_property_data)
+    const D = Dict( "request_port_names" => request_port_names,
+                    "stop_server" => stop_server,
+                    "request_property_data" => request_property_data)
+                    
     start_server(port) = start_server(port = Int(port))
     function start_server(;port = DEFAULT_PORT)
         try

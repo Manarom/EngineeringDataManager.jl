@@ -1,2 +1,2 @@
-include(joinpath(@__DIR__,"main.jl"))
-using .EDM
+include(joinpath(@__DIR__,"EngineeringDataManager.jl"))
+using .EngineeringDataManager
