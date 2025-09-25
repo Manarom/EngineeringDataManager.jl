@@ -11,7 +11,7 @@ module TCPcommunication
         port::Int=-1
     end
     # external constructor for the port 
-    #tcp_port(;port,ip::AbstractString="localhost") = tcp_port(getaddrinfo(ip, IPv4),port) 
+    tcp_port(;port::Int,ip::AbstractString="localhost") = tcp_port(getaddrinfo(ip, IPv4),port) 
 
     # Thing common for both server and client
     Base.@kwdef mutable struct tcp_connection
@@ -239,7 +239,7 @@ function read_with_timeout(io::IO, timeout)
             throw(TimeoutException("Readline timed out after $timeout seconds"))
             Base.throwto(task, InterruptException())
         else
-            Base.throwto(timer, InterruptException())
+            # Base.throwto(timer, InterruptException())
             return result
         end
     end
