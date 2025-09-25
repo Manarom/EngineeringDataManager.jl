@@ -5,7 +5,8 @@ module EngineeringDataManager
     include(joinpath(_dir,"DataServer.jl"))
     using .DataServer
     using .DataManager
-    
+    export read_engineering_data, get_data
+
     (@main)(args) = begin
         length(args) > 0 || return 1
         port = Base.parse(Int,args[1])

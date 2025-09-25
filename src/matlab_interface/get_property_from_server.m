@@ -17,7 +17,7 @@ function data = get_property_from_server(property_name,material_name,format,port
         data = err;
         return 
     end
-    on_clean = onCleanup(@()delete(tcp_client)); % closing connection after reseaving the response
+    on_clean = onCleanup(@()delete(tcp_client)); % closing connection after reciving the response
     a = struct("material",material_name,"property",property_name,"format",format);
     a_json = jsonencode(a);
     writeline(tcp_client,"request_property_data");writeline(tcp_client,a_json);

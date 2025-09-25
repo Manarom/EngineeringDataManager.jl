@@ -11,7 +11,7 @@ module TCPcommunication
         port::Int=-1
     end
     # external constructor for the port 
-    tcp_port(;port::Int=-1,ip::AbstractString="localhost") = tcp_port(getaddrinfo(ip, IPv4),port) 
+    #tcp_port(;port,ip::AbstractString="localhost") = tcp_port(getaddrinfo(ip, IPv4),port) 
 
     # Thing common for both server and client
     Base.@kwdef mutable struct tcp_connection
@@ -36,7 +36,12 @@ module TCPcommunication
         clients_list::Dict{Int,TCPSocket}=Dict{Int,TCPSocket}()
         room_lock=ReentrantLock()
     end
-    function tcp_server(connection::tcp_connection)
+    """
+    tcp_server(connection::tcp_connection)
+
+Creates server and starts listening
+"""
+function tcp_server(connection::tcp_connection)
         
         serv = tcp_server(connection=connection,
                             server=listen(connection.port.ip,connection.port.port)
@@ -46,8 +51,11 @@ module TCPcommunication
         return serv
     end
     """
-        Function for async task right after server started
-    """
+    accept_client_loop(serv::tcp_server)
+
+
+Main server loop
+"""
     function accept_client_loop(serv::tcp_server)
         # new client connection
         while !serv.shut_down_server
@@ -62,7 +70,11 @@ module TCPcommunication
         tcp_server_shutdown(serv)
     end
     # server shutting down function
-    function tcp_server_shutdown(serv::tcp_server)
+    """
+    tcp_server_shutdown(serv::tcp_server)
+
+"""
+function tcp_server_shutdown(serv::tcp_server)
         # remove all connections!
         list_of_clients = keys(serv.clients_list)
         for c in list_of_clients
@@ -71,8 +83,18 @@ module TCPcommunication
         close(serv.server) # should be replaced with shutting down task
     end
     """
-    Starts new server and returns its handle
-    """
+    start_server(;port::Int,
+        ip::String="localhost",
+        on_connection::ForN=nothing,
+        on_reading::ForN=nothing,
+        commands::Dict{String,Function}=Dict{String,Function}())
+
+
+Starts new server and returns its handle. Commands contains functions in dictionary, here 
+key (String) is the special string which if read from a connected client invokes the value (Function)
+This function must support two arguments, first is the server handle [`tcp_server`](@ref), the second is 
+the client TCPSocket object.     
+"""
     function start_server(;port::Int,
         ip::String="localhost",
         on_connection::ForN=nothing,
@@ -105,8 +127,8 @@ EXAMPLE from HTTP package Servers module
 =#
 #-------------------------------------
         """
-        Function to elaborate the client message (must be started as async task from the 
-        main server  workflow after getting client socket through the accept function)
+    Function to elaborate the client message (must be started as async task from the 
+    main server  workflow after getting client socket through the accept function)
 
         """
     function client_message_handler(serv::tcp_server,socket::TCPSocket)
@@ -143,8 +165,10 @@ EXAMPLE from HTTP package Servers module
         end
     end
     """
-    Adds client to the servers client base
-    """
+    add_client(serv::tcp_server,client::TCPSocket)
+
+Adds client to the servers client base
+"""
     function add_client(serv::tcp_server,client::TCPSocket)
         (port,) = get_socket_port(client)
         lock(serv.room_lock) do # need to lock the client base
@@ -152,7 +176,12 @@ EXAMPLE from HTTP package Servers module
         end
         @info "client added to the clientbase with " port
     end
-    function remove_client(serv,client::TCPSocket)
+    """
+    remove_client(serv,client::TCPSocket)
+
+Removes client
+"""
+function remove_client(serv,client::TCPSocket)
         remove_client(serv,get_socket_port(client)[1])
     end
     function remove_client(serv::tcp_server,client_port::Int)
@@ -170,7 +199,8 @@ EXAMPLE from HTTP package Servers module
     end
     """
     Returns the tuple of integer  port number and ip address string
-    """
+
+"""
     function get_socket_port(socket::TCPSocket)
         (socket_ip_address, socket_port_number)= Sockets.getpeername(socket) # returns clients ip and port address
          return (Int(socket_port_number),socket_ip_address)
