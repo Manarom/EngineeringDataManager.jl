@@ -2,7 +2,7 @@
 # after running this script is starts the servet at localhost (by default - on DEFAULT_PORT) 
 module TCPcommunication
     const DEFAULT_PORT = 2000
-    export start_server,tcp_server,try_write,try_readline,DEFAULT_PORT
+    export start_server,tcp_server,try_write,try_readline,DEFAULT_PORT,read_with_timeout
     using Sockets
     const ForN   = Union{Function,Nothing} # function or nothing type for server starting function call
     Base.@kwdef mutable struct tcp_port
@@ -107,13 +107,14 @@ EXAMPLE from HTTP package Servers module
         """
         Function to elaborate the client message (must be started as async task from the 
         main server  workflow after getting client socket through the accept function)
+
         """
     function client_message_handler(serv::tcp_server,socket::TCPSocket)
         # function to handle client message
         # tcp_server - object
         # socket - client connection 
         while !serv.shut_down_server && isopen(socket) && isreadable(socket)
-            (is_ok,line) = try_readline(socket)
+            (is_ok, line) = try_readline(socket)
             if !is_ok
                 break
             end
@@ -186,6 +187,24 @@ EXAMPLE from HTTP package Servers module
         end
     
         return true
+    end
+    function read_with_timeout(io::IO, timeout::Float64)
+        channel = Channel{Union{String, Nothing}}(1)
+        task = @async put!(channel, try readline(io) catch; nothing end)
+        timer = @async begin
+            sleep(timeout)
+            put!(channel, nothing)
+        end
+        result = take!(channel)
+        if result === nothing
+            throw(TimeoutException("Readline timed out after $timeout seconds"))
+            Base.throwto(task, InterruptException())
+        else
+            return result
+        end
+    end
+    struct TimeoutException <: Exception
+        msg::String
     end
 end
 

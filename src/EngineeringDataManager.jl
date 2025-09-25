@@ -99,6 +99,10 @@ function fill_materials_nodes()
     all_properties_ids() = filter(k->contains(k,"pr") , all_ids())
     all_properties_names() = [IDS[][p] for p in all_properties_ids()]
     all_materials_names() = all_materials() |> collect
+    all_materials_names_string() = join(all_materials_names()," , ")
+    all_properties_names_string() = join(all_properties_names()," , ")
+    all_properties_ids_string() = join(all_properties_ids()," , ")
+    all_parameters_ids_string() = join(all_parameters_ids()," , ")
     """
     fill_ids()
 
@@ -153,9 +157,9 @@ function get_prop_id_by_prop_name(property_name)
         is_by_id = haskey(D_ids,property_name)
         is_by_name = haskey(D_names,property_name)
         if is_by_id 
-            !contains(property_name,"pr") ? error("Wrong property $(property_name)") : return property_name 
+            !contains(property_name,"pr") ? error("Wrong property  `$(property_name)` value must be a member of $(all_properties_names_string())") : return property_name 
         elseif !is_by_name
-            error("Wrong property  `$(property_name)` value must be a member of $(join(all_properties_names(),','))")
+            error("Wrong property  `$(property_name)` value must be a member of $(all_properties_names_string())")
         end
         for v in D_names[property_name]
             !contains(v,"pr") || return v
@@ -191,7 +195,7 @@ Material node by name, returns Tuple (material_name,material_node)
 """
 function get_material_node(material_name)
         !isempty(MATERIALS_NODES[]) || fill_materials_nodes()
-        haskey(MATERIALS_NODES[],material_name) || error("Unknown material $(material_name)")
+        haskey(MATERIALS_NODES[],material_name) || error("Unknown material $(material_name), available materials are $(all_materials_names_string())")
         return (material_name, MATERIALS_NODES[][material_name])
     end
 abstract type  AbstractNodeWrapper end
@@ -309,11 +313,22 @@ function get_all_qualifiers(w_node::Union{ParameterValueNode,PropertyDataNode})
         end
     end
     strstr(s::AbstractString) = ( string ∘ strip)(s)
-    function get_data(;property_name::AbstractString,material_name::AbstractString, format::AbstractString)
-        if format == "Polynomial"
 
-        else
-            
+    function get_data(;property_name::AbstractString,material_name::AbstractString, format::AbstractString)
+        try
+            if format == "Polynomial"
+                data = get_data(property_name = property_name, material_name = material_name, format = "Tabular")
+                hasproperty(data,:x) || return data
+                poly_fit = fit(Polynomial,data.x,data.y)
+                return (data...,type = format, polynomial = poly_fit.coeffs)
+            elseif format == "Tabular"
+                data = get_property_data(property_name = property_name,
+                                                            material_name = material_name) |> tabular_data
+                return (data..., type = format)
+            end
+        catch err
+            @show err
+            return err
         end
     end
     function get_property_data(;property_name,material_name)
@@ -325,19 +340,19 @@ function get_all_qualifiers(w_node::Union{ParameterValueNode,PropertyDataNode})
         for p_i in pdc.parameters
             !is_dependent_variable(p_i) || return (p_i.name, p_i.data)
         end
-        return nothing
+        return (nothing,nothing)
     end
     function get_independent_parameter_data(pdc::PropertyDataContent)
         for p_i in pdc.parameters
             !is_independent_variable(p_i) || return (p_i.name, p_i.data)
         end
-        return nothing
+        return (nothing,nothing)
     end
     function get_optional_variable(pdc::PropertyDataContent)
         for p_i in pdc.parameters
             !is_optional_variable(p_i) || return (p_i.name, p_i.qualifiers)
         end
-        return nothing
+        return (nothing,nothing)
     end
     function tabular_data(pdc::PropertyDataContent)
         (x_name,x_data) = get_independent_parameter_data(pdc)

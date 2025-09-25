@@ -6,7 +6,7 @@ module EngineeringDataServer
     using ..EngineeringDataManager
     using JSON3,Observables,Sockets
     # JSON3 package allows to read to the struct, this struct is to check this
-
+    export start_server
     # reference to the obj
     #const inst_state = Ref(InstrumentState())
     const json_string = Ref{JSON3.Object}()
@@ -33,13 +33,14 @@ module EngineeringDataServer
             data_format = getproperty(str_out ,:format)
             data_table = EngineeringDataManager.get_data(property_name = property_name,
                                                         material_name = material_name,
-                                                        format = data_format) |> EngineeringDataManager.tabular_data
+                                                        format = data_format)
             json_string = JSON3.write(data_table)       
             return try_write(socket,json_string) 
         catch err1
             @show err1
             println("Incorrect json")
-            return false
+            json_string = JSON3.write(err1) 
+            return try_write(socket,json_string) 
         end
                                     
     end
@@ -58,17 +59,17 @@ module EngineeringDataServer
     const D = Dict("request_port_names"=>request_port_names,
                     "stop_server"=>stop_server,
                     "request_property_data"=>request_property_data)
-
+    start_server(port) = start_server(port = Int(port))
     function start_server(;port = DEFAULT_PORT)
         try
             s = TCPcommunication.start_server(port=port,commands = D)
             SERVER[] = s
-            return true
+            return (true,"")
         catch ex
             @show ex
-            return false
+            return (false,string(ex))
         end
         
     end
-    
+
 end
