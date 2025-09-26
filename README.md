@@ -1,8 +1,10 @@
 # EngineeringDataManager
 
 [![Build Status](https://github.com/Manarom/EngineeringDataManager.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/Manarom/EngineeringDataManager.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://manarom.github.io/EngineeringDataManager.jl/)
 
-This package is designed to work with XML files in `MatML_doc` format (for example, material properties exported from `EngineeringData` in `ANSYS Mechanical` are in this format). A sample file is located in the project folder. The module `EngineeringDataManager` is used to load material properties, which automatically loads data from the material library (by default, this is the file [EngineeringData.xml](.//src//EngineeringData.xml)); 
+
+This package is designed to work with XML files in `MatML_doc` format (for example,  `ANSYS Mechanical` exports material properties (`EngineeringData`)  in this format). Currently the package allows one to read property data as a table or property polynomial approximation. A sample file [EngineeringData.xml](.//src//EngineeringData.xml) is located in the project folder. 
 
 # Installation
 
@@ -53,13 +55,10 @@ Interface of server communication using [matlab](.//src//matlab_interface//) and
 Examples of function for reading data in [matlab](.//src//matlab_interface//get_property_from_server.m) 
 and [python]( .//src//python_interface//get_property_from_server.py)
 
-For instance, to read property data for the `density` of `Structural Steel` in a tabular form, 
-
-In MATLAB command line:
-
+For instance, to read property data for the `density` of `Structural Steel` in a tabular form, in MATLAB command line:
 ``` MATLAB
-    addpath('.//src//matlab_interface') %adds to path matlab interface folder  
-    data = get_property_from_server("Density","Structural Steel","Tabular") % returns structure with properties
+    addpath('.//src//matlab_interface') %adds the  location of get_property_from_server function to the MATLAB path  
+    data = get_property_from_server("Density","Structural Steel","Tabular") % returns struct with properties
 ```
 
 

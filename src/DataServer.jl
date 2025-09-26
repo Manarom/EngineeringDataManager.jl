@@ -4,21 +4,35 @@ module DataServer
     using ..DataManager
     using JSON3,Observables,Sockets
     # JSON3 package allows to read to the struct, this struct is to check this
-    export start_server
+    export start_server, COMMANDS_LIST
     # reference to the obj
     #const inst_state = Ref(InstrumentState())
     const json_string = Ref{JSON3.Object}()
-    const new_request_recieved = Observable(false)
-    const SERVER = Ref{tcp_server}()
-    # callbacks
-    function request_port_names(serv::tcp_server,sock::TCPSocket)
+    const SERVER = Ref{TCP_Server}()
+
+    """
+    request_port_names(serv::TCP_Server,sock::TCPSocket)
+
+Returns all clients ports names
+"""
+function request_port_names(serv::TCP_Server,sock::TCPSocket)
         line =reduce(*,"  "*string(i[1]) for i in serv.clients_list)
         try_write(sock,line)
     end
-    function stop_server(serv::tcp_server,::TCPSocket)
+    """
+    stop_server(serv::TCP_Server,::TCPSocket)
+
+Server shutting down 
+"""
+function stop_server(serv::TCP_Server,_)
         serv.shut_down_server=true
     end
-    function request_property_data(::tcp_server,socket::TCPSocket)
+    """
+    request_property_data(::TCP_Server,socket::TCPSocket)
+
+Client property request callback
+"""
+function request_property_data(::TCP_Server,socket::TCPSocket)
         try 
             str_out = JSON3.read(read_with_timeout(socket,30.0))     #readline(socket))
             JSON3.pretty(stdout,str_out)
@@ -41,33 +55,48 @@ module DataServer
         end
                                     
     end
-    function new_request_recieved_callback(val)
-        val && isassigned(json_string) || return nothing
-        json_obj = json_string[]
-        if !is_correct_property_request(json_obj)
-            @info "Incorrect property request json"
-            return false
-        end
-    end
+
     is_correct_property_request(json_obj) = hasproperty(json_obj,:property) && 
                                             hasproperty(json_obj,:material) && 
                                             hasproperty(json_obj,:format)
-    #StructTypes.StructType(::Type{InstrumentState}) = StructTypes.Mutable()
-    const D = Dict( "request_port_names" => request_port_names,
-                    "stop_server" => stop_server,
-                    "request_property_data" => request_property_data)
-                    
-    start_server(port) = start_server(port = Int(port))
-    function start_server(;port = DEFAULT_PORT)
+
+    const COMMANDS_LIST = Dict( "request_port_names" => request_port_names,
+                        "stop_server" => stop_server,
+                        "request_property_data" => request_property_data)
+
+    @doc"""
+    Dictionary associates tcp client request strings with internal functions, to add a new request - function
+pair, one should write code for the callback function and include `request string => function` pair to this dictionary
+Callback function must accept two arguments 
+"""
+COMMANDS_LIST                    
+    """
+    start_server(port)
+
+Starts localhost server on specified port  
+"""
+start_server(port) = start_server(port = Int(port))
+    """
+    start_server(;port = DEFAULT_PORT)
+
+Starts localhost server on specified port  
+"""
+function start_server(;port = DEFAULT_PORT)
         try
-            s = TCPcommunication.start_server(port=port,commands = D)
+            s = TCPcommunication.start_server(port=port,commands = COMMANDS_LIST)
             SERVER[] = s
-            return (true,"")
+            return (true,"started")
         catch ex
             @show ex
             return (false,string(ex))
         end
         
     end
-
+    """
+    Module which runs a simple tcp/ip server to elaborate requests from external clients
+Requests are configured in [`COMMANDS_LIST`] dictionary. First, client should send a string of
+request (key of the `COMMANDS_LIST`), further is should conretize the request according to
+the request callback specification.
+"""
+    DataServer
 end

@@ -2,34 +2,34 @@
 # after running this script is starts the servet at localhost (by default - on DEFAULT_PORT) 
 module TCPcommunication
     const DEFAULT_PORT = 2000
-    export start_server,tcp_server,try_write,try_readline,DEFAULT_PORT,read_with_timeout
+    export start_server,tcp_server,TCP_Server,TCP_Port,TCP_Connection,try_write,try_readline,DEFAULT_PORT,read_with_timeout
     using Sockets
     const ForN   = Union{Function,Nothing} # function or nothing type for server starting function call
-    Base.@kwdef mutable struct tcp_port
+    mutable struct TCP_Port
         # basic port object connects ip address and port in one structure
-        ip::IPAddr=getaddrinfo("localhost", IPv4)
-        port::Int=-1
+        port::Int
+        ip::IPAddr
+        TCP_Port(;port::Int=DEFAULT_PORT,ip::AbstractString="localhost") = new(port, getaddrinfo(ip, IPv4))
     end
-    # external constructor for the port 
-    tcp_port(;port::Int,ip::AbstractString="localhost") = tcp_port(getaddrinfo(ip, IPv4),port) 
-
+     
     # Thing common for both server and client
-    Base.@kwdef mutable struct tcp_connection
-        port::tcp_port # port properties
+    Base.@kwdef mutable struct TCP_Connection
+        port::TCP_Port # port properties
         on_connection::ForN # on client connection callback 
         commands::Dict{String,Function} # this dictionary stores special keywords to be called when message recieving
         on_reading::ForN # every reading callback
     end
     """
     Structure to store the server object
-    fields:
-                connection - tcp connection settings
-                server - TCPserver object
-                clients_streams - clients io Streams
+
+fields:
+    connection - tcp connection settings
+    server - TCPserver object
+    clients_streams - clients io Streams
 
     """
-    Base.@kwdef mutable struct tcp_server
-        connection::tcp_connection
+    Base.@kwdef mutable struct TCP_Server
+        connection::TCP_Connection
         server::Sockets.TCPServer
         task::Task=Task([]) # @async task created right after port connection
         shut_down_server::Bool =false# flag to shut down the server
@@ -37,13 +37,13 @@ module TCPcommunication
         room_lock=ReentrantLock()
     end
     """
-    tcp_server(connection::tcp_connection)
+    tcp_server(connection::TCP_Connection)
 
 Creates server and starts listening
 """
-function tcp_server(connection::tcp_connection)
+function tcp_server(connection::TCP_Connection)
         
-        serv = tcp_server(connection=connection,
+        serv = TCP_Server(connection=connection,
                             server=listen(connection.port.ip,connection.port.port)
         )
         serv.task=errormonitor(@async accept_client_loop(serv))
@@ -51,12 +51,12 @@ function tcp_server(connection::tcp_connection)
         return serv
     end
     """
-    accept_client_loop(serv::tcp_server)
+    accept_client_loop(serv::TCP_Server)
 
 
 Main server loop
 """
-    function accept_client_loop(serv::tcp_server)
+    function accept_client_loop(serv::TCP_Server)
         # new client connection
         while !serv.shut_down_server
             client = accept(serv.server)# accept function waits for  connection of  client returns TCPsocket
@@ -65,16 +65,16 @@ Main server loop
             client_port_number = Int(peername[2])
             @info "Socket accepted" client_ip_address client_port_number
             add_client(serv,client)   
-            errormonitor(@async client_message_handler(serv,client))
+            errormonitor(@async client_message_handler(serv,client)) # starting clients message handler task
         end
         tcp_server_shutdown(serv)
     end
     # server shutting down function
     """
-    tcp_server_shutdown(serv::tcp_server)
+    tcp_server_shutdown(serv::TCP_Server)
 
 """
-function tcp_server_shutdown(serv::tcp_server)
+function tcp_server_shutdown(serv::TCP_Server)
         # remove all connections!
         list_of_clients = keys(serv.clients_list)
         for c in list_of_clients
@@ -92,7 +92,7 @@ function tcp_server_shutdown(serv::tcp_server)
 
 Starts new server and returns its handle. Commands contains functions in dictionary, here 
 key (String) is the special string which if read from a connected client invokes the value (Function)
-This function must support two arguments, first is the server handle [`tcp_server`](@ref), the second is 
+This function must support two arguments, first is the server handle [`TCP_Server`](@ref), the second is 
 the client TCPSocket object.     
 """
     function start_server(;port::Int,
@@ -100,8 +100,8 @@ the client TCPSocket object.
         on_connection::ForN=nothing,
         on_reading::ForN=nothing,
         commands::Dict{String,Function}=Dict{String,Function}())
-        port_obj = tcp_port(port=port,ip = ip) # creating tcp port object
-        port_con=tcp_connection(port=port_obj,
+        port_obj = TCP_Port(port=port,ip = ip) # creating tcp port object
+        port_con=TCP_Connection(port=port_obj,
                     on_connection=on_connection,
                     on_reading=on_reading,
                     commands=commands)    
@@ -131,9 +131,9 @@ EXAMPLE from HTTP package Servers module
     main server  workflow after getting client socket through the accept function)
 
         """
-    function client_message_handler(serv::tcp_server,socket::TCPSocket)
+    function client_message_handler(serv::TCP_Server,socket::TCPSocket)
         # function to handle client message
-        # tcp_server - object
+        # TCP_Server - object
         # socket - client connection 
         while !serv.shut_down_server && isopen(socket) && isreadable(socket)
             (is_ok, line) = try_readline(socket)
@@ -143,7 +143,7 @@ EXAMPLE from HTTP package Servers module
             @info "Client writes" Sockets.getpeername(socket)  line
             if haskey(serv.connection.commands,line)
                 @info "Operation command recieved" line
-                serv.connection.commands[line](serv,socket)
+                serv.connection.commands[line](serv,socket) # calling special request function callback
                 continue
             end
             if !try_write(socket ,"server echoes "*line)
@@ -165,11 +165,11 @@ EXAMPLE from HTTP package Servers module
         end
     end
     """
-    add_client(serv::tcp_server,client::TCPSocket)
+    add_client(serv::TCP_Server,client::TCPSocket)
 
 Adds client to the servers client base
 """
-    function add_client(serv::tcp_server,client::TCPSocket)
+    function add_client(serv::TCP_Server,client::TCPSocket)
         (port,) = get_socket_port(client)
         lock(serv.room_lock) do # need to lock the client base
             serv.clients_list[port]=client
@@ -184,7 +184,7 @@ Removes client
 function remove_client(serv,client::TCPSocket)
         remove_client(serv,get_socket_port(client)[1])
     end
-    function remove_client(serv::tcp_server,client_port::Int)
+    function remove_client(serv::TCP_Server,client_port::Int)
         
         if !haskey(serv.clients_list,client_port)
             return
@@ -221,7 +221,9 @@ function remove_client(serv,client::TCPSocket)
     """
     read_with_timeout(io::IO, timeout)
 
-This function may be useful when one needs a response from the client to prevent
+This function may be useful to prevent the clients task suspending at readline call (see [`client_message_handler`](@ref))
+when one needs a response from the client (as far as each client has its own message handler 
+when one server-client communication is freezed this does not affects the other clients)
 """
 function read_with_timeout(io::IO, timeout)
         channel = Channel{Union{String, Nothing}}(1)

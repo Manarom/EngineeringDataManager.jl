@@ -1,5 +1,4 @@
 /Manifest*.toml
 .vscode
 /src/debug*
-/src/cat*
 /src/matlab interface/matlab_debug_script.m

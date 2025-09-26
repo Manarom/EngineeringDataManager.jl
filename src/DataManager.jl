@@ -110,7 +110,6 @@ function fill_materials_nodes()
 
 Fills `ID` => `name` dictionary IDS[] and NAMES[] dictionary for `name` => `ID`
 Name can contain several ids thus NAMES[] dictionary elements are the vectors of strings
-
 """
 function fill_ids()
         meta_data_node = find_nodes(XML_DOC[],"Metadata")
@@ -329,7 +328,7 @@ function get_all_qualifiers(w_node::Union{ParameterValueNode,PropertyDataNode})
                 return (data..., type = format)
             end
         catch err
-            @show err
+            # @show err
             return err
         end
     end

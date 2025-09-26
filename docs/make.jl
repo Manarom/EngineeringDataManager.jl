@@ -1,5 +1,5 @@
 push!(LOAD_PATH,"../src/")
-using Documenter, XMLWalker
+using Documenter, EngineeringDataManager
 mathengine = Documenter.MathJax3()
 makedocs(
         sitename = "EngineeringDataManager.jl",
@@ -9,7 +9,10 @@ makedocs(
         format=Documenter.HTML(size_threshold = 2000 * 2^10),
         pages=[
                 "Home" => "index.md",
-                "API" =>"API.md"
+                "API" =>[
+                        "DataManager"=>"DataManager.md"
+                        "DataServer"=>"DataServer.md"
+                        ]
                 ]
 )
 deploydocs(;
