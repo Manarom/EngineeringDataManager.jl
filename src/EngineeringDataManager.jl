@@ -14,6 +14,7 @@ Module entry point to start the material server
 (@main)(args) = begin
         length(args) > 0 || return 1
         port = Base.parse(Int,args[1])
+        length(args) < 2 || isfile(args[2]) ?  DataManager.read_engineering_data(file_fullname = args[2]) : error("File $(args[2]) does not exist relaunch script with a correct name")
         (is_ok, message) = start_server(port)
         sleep(1e-2)
         isassigned(DataServer.SERVER) || return -1

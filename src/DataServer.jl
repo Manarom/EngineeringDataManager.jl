@@ -55,15 +55,53 @@ function request_property_data(::TCP_Server,socket::TCPSocket)
         end
                                     
     end
+    """
+    request_materials_names(::TCP_Server,socket::TCPSocket)
 
+Writes to client all materials names
+"""
+request_materials_names(::TCP_Server,socket::TCPSocket) = try_write(socket,DataManager.all_materials_names_string())
+
+    """
+    request_materials_names(::TCP_Server,socket::TCPSocket)
+
+Writes to client all available properties names
+"""
+equest_properties_names(::TCP_Server,socket::TCPSocket) = try_write(socket,DataManager.all_properties_names_string())
+
+"""
+    request_xml_file(::TCP_Server,socket::TCPSocket)
+
+Returns current xml file fullpath
+"""
+request_xml_file(::TCP_Server,socket::TCPSocket) = try_write(socket,DataManager.ENG_DATA_FILE[])
+"""
+    change_xml_file(::TCP_Server,socket::TCPSocket)
+
+Callback to change the xml file 
+"""
+function change_xml_file(::TCP_Server,socket::TCPSocket)
+    file_name = read_with_timeout(socket,30.0) 
+    isfile(file_name) || return false
+    return DataManager.read_engineering_data( file_fullname = file_name)
+end
     is_correct_property_request(json_obj) = hasproperty(json_obj,:property) && 
                                             hasproperty(json_obj,:material) && 
                                             hasproperty(json_obj,:format)
 
-    const COMMANDS_LIST = Dict( "request_port_names" => request_port_names,
+    const COMMANDS_LIST = Base.ImmutableDict( 
+                        "request_port_names" => request_port_names,
                         "stop_server" => stop_server,
-                        "request_property_data" => request_property_data)
+                        "request_property_data" => request_property_data,
+                        "request_properties_names" => request_properties_names,
+                        "request_materials_names" => request_materials_names,
+                        "request_xml_file" => request_xml_file,
+                        "available_requests" => available_requests,
+                        "change_xml_file" => change_xml_file)
 
+    function available_requests(::TCP_Server,socket::TCPSocket)
+        try_write(socket,join(collect(keys(COMMANDS_LIST))," , "))
+    end   
     @doc"""
     Dictionary associates tcp client request strings with internal functions, to add a new request - function
 pair, one should write code for the callback function and include `request string => function` pair to this dictionary
