@@ -67,7 +67,7 @@ request_materials_names(::TCP_Server,socket::TCPSocket) = try_write(socket,DataM
 
 Writes to client all available properties names
 """
-equest_properties_names(::TCP_Server,socket::TCPSocket) = try_write(socket,DataManager.all_properties_names_string())
+request_properties_names(::TCP_Server,socket::TCPSocket) = try_write(socket,DataManager.all_properties_names_string())
 
 """
     request_xml_file(::TCP_Server,socket::TCPSocket)
@@ -85,11 +85,14 @@ function change_xml_file(::TCP_Server,socket::TCPSocket)
     isfile(file_name) || return false
     return DataManager.read_engineering_data( file_fullname = file_name)
 end
+function available_requests(::TCP_Server,socket::TCPSocket)
+    try_write(socket,join(collect(keys(COMMANDS_LIST))," , "))
+end   
     is_correct_property_request(json_obj) = hasproperty(json_obj,:property) && 
                                             hasproperty(json_obj,:material) && 
                                             hasproperty(json_obj,:format)
 
-    const COMMANDS_LIST = Base.ImmutableDict( 
+    const COMMANDS_LIST = Base.Dict( 
                         "request_port_names" => request_port_names,
                         "stop_server" => stop_server,
                         "request_property_data" => request_property_data,
@@ -99,9 +102,7 @@ end
                         "available_requests" => available_requests,
                         "change_xml_file" => change_xml_file)
 
-    function available_requests(::TCP_Server,socket::TCPSocket)
-        try_write(socket,join(collect(keys(COMMANDS_LIST))," , "))
-    end   
+
     @doc"""
     Dictionary associates tcp client request strings with internal functions, to add a new request - function
 pair, one should write code for the callback function and include `request string => function` pair to this dictionary
